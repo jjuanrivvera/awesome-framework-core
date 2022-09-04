@@ -1,0 +1,28 @@
+{
+    "name": "jjuanrivvera/awesome-framework-core",
+    "description": "Awesome Framework Core",
+    "keywords": [
+        "core",
+        "framework",
+        "awesome"
+    ],
+    "type": "library",
+    "version": "1.0.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Juan Felipe Rivera G",
+            "email": "jjuanrivvera@gmail.com"
+        }
+    ],
+    "require": {
+        "twig/twig": "^3.0",
+        "php-di/php-di": "^6.3",
+        "filp/whoops": "^2.14"
+    },
+    "autoload": {
+        "psr-4": {
+            "Awesome\\": "src/"
+        }
+    }
+}
