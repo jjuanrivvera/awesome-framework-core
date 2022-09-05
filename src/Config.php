@@ -118,7 +118,7 @@ class Config
     {
         $configParams = [];
 
-        foreach (glob(__DIR__ . '/../config/*.php') as $filename) {
+        foreach (glob($_SERVER['DOCUMENT_ROOT'] . '/../config/*.php') as $filename) {
             $configParams = array_merge($configParams, include $filename);
         }
 

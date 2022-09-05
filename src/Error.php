@@ -63,7 +63,7 @@ class Error
 
     public static function logError(\Exception $exception)
     {
-        $log = dirname(__DIR__) . '/logs/' . date('Y-m-d') . '.txt';
+        $log = dirname($_SERVER['DOCUMENT_ROOT']) . '/logs/' . date('Y-m-d') . '.txt';
         ini_set('error_log', $log);
         $message = "Uncaught exception: '" . get_class($exception) . "'";
         $message .= " with message '" . $exception->getMessage() . "'";
