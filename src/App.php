@@ -58,7 +58,7 @@ class App
      */
     public static function loadRoutes()
     {
-        $files = glob(__DIR__ . '/../routes/*.php');
+        $files = glob($_SERVER['DOCUMENT_ROOT'] . '/../routes/*.php');
 
         foreach ($files as $file) {
             require $file;
@@ -92,7 +92,7 @@ class App
     public static function loadRepositories()
     {
         // get all contracts files
-        $files = glob(dirname(__DIR__) . '/App/Contracts/*.php');
+        $files = glob(dirname($_SERVER['DOCUMENT_ROOT']) . '/App/Contracts/*.php');
 
         // bind each contract to its repository
         foreach ($files as $file) {
