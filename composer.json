@@ -7,7 +7,7 @@
         "awesome"
     ],
     "type": "library",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "license": "MIT",
     "authors": [
         {
@@ -23,6 +23,9 @@
     "autoload": {
         "psr-4": {
             "Awesome\\": "src/"
-        }
+        },
+        "files": [
+            "src/Helpers.php"
+        ]
     }
 }

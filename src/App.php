@@ -56,9 +56,11 @@ class App
      * Load routes
      * @return void
      */
-    public static function loadRoutes()
+    public static function loadRoutes($routePath = null)
     {
-        $files = glob($_SERVER['DOCUMENT_ROOT'] . '/../routes/*.php');
+        $routePath = $routePath ?: dirname($_SERVER['DOCUMENT_ROOT']) . '/routes/web.php';
+        
+        $files = glob($routePath);
 
         foreach ($files as $file) {
             require $file;
@@ -89,16 +91,21 @@ class App
     /**
      * Load repositories
      */
-    public static function loadRepositories()
-    {
+    public static function loadRepositories(
+        $contractsPath = null,
+        $contractsNamespace = 'App\Contracts\\',
+        $repositoriesNamespace = 'App\Repositories\\'
+    ) {
+        $contractsPath = $contractsPath ?: dirname($_SERVER['DOCUMENT_ROOT']) . '/App/Contracts/*.php';
+
         // get all contracts files
-        $files = glob(dirname($_SERVER['DOCUMENT_ROOT']) . '/App/Contracts/*.php');
+        $files = glob($contractsPath);
 
         // bind each contract to its repository
         foreach ($files as $file) {
             $class = basename($file, '.php');
-            $contract = 'App\Contracts\\' . $class;
-            $repository = 'App\Repositories\\' . str_replace('Contract', 'Repository', $class);
+            $contract = $contractsNamespace . $class;
+            $repository = $repositoriesNamespace . str_replace('Contract', 'Repository', $class);
             
             try {
                 $repositoryClass = self::$container->get($repository);
@@ -117,7 +124,6 @@ class App
     {
         self::loadErrorAndExceptionHandler();
         self::loadRoutes();
-        self::loadRepositories();
         self::initializeRouter();
     }
 }
