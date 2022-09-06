@@ -41,9 +41,10 @@ class Router
      * Add a route to the routing table
      * @param string $route The route URL
      * @param array $params Parameters (controller, action, etc.)
+     * @param string $method The request method
      * @return void
      */
-    public static function add($route, $params = [])
+    public static function add($route, $params = [], $method = 'GET')
     {
         // Convert the route to a regular expression: escape forward slashes
         $route = preg_replace('/\//', '\\/', $route);
@@ -57,7 +58,74 @@ class Router
         // Add start and end delimiters, and case insensitive flag
         $route = '/^' . $route . '$/i';
 
+        $params['method'] = $method;
         self::$routes[$route] = $params;
+    }
+
+    /**
+     * Add a get route to the routing table
+     * @param string $route The route URL
+     * @param array $params Parameters (controller, action, etc.)
+     * @return void
+     */
+    public static function get($route, $params = [])
+    {
+        self::add($route, $params, 'GET');
+    }
+
+    /**
+     * Add a post route to the routing table
+     * @param string $route The route URL
+     * @param array $params Parameters (controller, action, etc.)
+     * @return void
+     */
+    public static function post($route, $params = [])
+    {
+        self::add($route, $params, 'POST');
+    }
+
+    /**
+     * Add a put route to the routing table
+     * @param string $route The route URL
+     * @param array $params Parameters (controller, action, etc.)
+     * @return void
+     */
+    public static function put($route, $params = [])
+    {
+        self::add($route, $params, 'PUT');
+    }
+
+    /**
+     * Add a delete route to the routing table
+     * @param string $route The route URL
+     * @param array $params Parameters (controller, action, etc.)
+     * @return void
+     */
+    public static function delete($route, $params = [])
+    {
+        self::add($route, $params, 'DELETE');
+    }
+
+    /**
+     * Add a patch route to the routing table
+     * @param string $route The route URL
+     * @param array $params Parameters (controller, action, etc.)
+     * @return void
+     */
+    public static function patch($route, $params = [])
+    {
+        self::add($route, $params, 'PATCH');
+    }
+
+    /**
+     * Add a options route to the routing table
+     * @param string $route The route URL
+     * @param array $params Parameters (controller, action, etc.)
+     * @return void
+     */
+    public static function options($route, $params = [])
+    {
+        self::add($route, $params, 'OPTIONS');
     }
 
     /**
@@ -81,7 +149,7 @@ class Router
         //$reg_exp = '/^(?P<controller>[a-z-]+)\/(?P<action>[a-z-]+)$/';
         
         foreach (self::$routes as $route => $params) {
-            if (preg_match($route, $url, $matches)) {
+            if (preg_match($route, $url, $matches) && self::$request->getMethod() == $params['method']) {
                 // Get named capture group values
 
                 foreach ($matches as $key => $match) {
@@ -111,6 +179,7 @@ class Router
 
     /**
      * Dispatch the route, creating the controller object and running the action method
+     * @param string $url The route URL
      * @return void
      */
     public static function dispatch($url)
