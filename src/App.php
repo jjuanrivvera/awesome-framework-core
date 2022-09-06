@@ -59,7 +59,7 @@ class App
     public static function loadRoutes($routePath = null)
     {
         $routePath = $routePath ?: dirname($_SERVER['DOCUMENT_ROOT']) . '/routes/web.php';
-        
+
         $files = glob($routePath);
 
         foreach ($files as $file) {
@@ -88,13 +88,15 @@ class App
         self::$router->dispatch(str_replace('url=', '', $_SERVER['QUERY_STRING']));
     }
 
-    /**
+   /**
      * Load repositories
      */
     public static function loadRepositories(
         $contractsPath = null,
         $contractsNamespace = 'App\Contracts\\',
-        $repositoriesNamespace = 'App\Repositories\\'
+        $repositoriesNamespace = 'App\Repositories\\',
+        $contractsSufix = 'Contract',
+        $repositoriesSufix = 'Repository'
     ) {
         $contractsPath = $contractsPath ?: dirname($_SERVER['DOCUMENT_ROOT']) . '/App/Contracts/*.php';
 
@@ -105,7 +107,7 @@ class App
         foreach ($files as $file) {
             $class = basename($file, '.php');
             $contract = $contractsNamespace . $class;
-            $repository = $repositoriesNamespace . str_replace('Contract', 'Repository', $class);
+            $repository = $repositoriesNamespace . str_replace($contractsSufix, $repositoriesSufix, $class);
             
             try {
                 $repositoryClass = self::$container->get($repository);
