@@ -149,4 +149,13 @@ class Request
 
         return $headers;
     }
+
+    /**
+     * Get body
+     * @return mixed
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
 }
