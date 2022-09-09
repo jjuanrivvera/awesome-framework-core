@@ -34,4 +34,36 @@ class Database
             throw new \Exception($e->getMessage(), (int) $e->getCode());
         }
     }
+
+    /**
+     * Begin transaction
+     */
+    public function beginTransaction()
+    {
+        $this->connection->beginTransaction();
+    }
+
+    /**
+     * Commit transaction
+     */
+    public function commit()
+    {
+        $this->connection->commit();
+    }
+
+    /**
+     * Rollback transaction
+     */
+    public function rollback()
+    {
+        $this->connection->rollBack();
+    }
+
+    /**
+     * Get last insert id
+     */
+    public function lastInsertId()
+    {
+        return $this->connection->lastInsertId();
+    }
 }
