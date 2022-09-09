@@ -89,44 +89,65 @@ abstract class Model
      */
     public function update($id, $data)
     {
-        $query = "UPDATE {$this->table} SET ";
-        $query .= implode(', ', array_map(function ($key) use ($data) {
-            return "{$key} = :{$key}";
-        }, array_keys($data)));
-        $query .= " WHERE id = :id";
+        try {
+            $this->db->beginTransaction();
+            $query = "UPDATE {$this->table} SET ";
+            $query .= implode(', ', array_map(function ($key) use ($data) {
+                return "{$key} = :{$key}";
+            }, array_keys($data)));
+            $query .= " WHERE id = :id";
+    
+            $statement = $this->db->connection->prepare($query);
+            $statement->bindParam(':id', $id);
+    
+            foreach ($data as $key => $value) {
+                $statement->bindParam(":{$key}", $value);
+            }
+    
+            $statement->execute();
+            $this->db->commit();
 
-        $statement = $this->db->connection->prepare($query);
-        $statement->bindParam(':id', $id);
-
-        foreach ($data as $key => $value) {
-            $statement->bindParam(":{$key}", $value);
+            return $this->find($id);
+        } catch (\Throwable $th) {
+            $this->db->rollback();
+            throw $th;
         }
 
-        $statement->execute();
+        return $this->find($id);
     }
-    
+
     /**
-     * Create a record in the database
+     * Create and return record in the database
      * @param  array $data
-     * @return void
+     * @return array
      */
     public function create($data)
     {
-        $query = "INSERT INTO {$this->table} (";
-        $query .= implode(', ', array_keys($data));
-        $query .= ") VALUES (";
-        $query .= implode(', ', array_map(function ($key) {
-            return ":{$key}";
-        }, array_keys($data)));
-        $query .= ")";
+        try {
+            $this->db->beginTransaction();
+            $query = "INSERT INTO {$this->table} (";
+            $query .= implode(', ', array_keys($data));
+            $query .= ") VALUES (";
+            $query .= implode(', ', array_map(function ($key) {
+                return ":{$key}";
+            }, array_keys($data)));
+            $query .= ")";
+    
+            $statement = $this->db->connection->prepare($query);
+    
+            foreach ($data as $key => $value) {
+                $statement->bindParam(":{$key}", $value);
+            }
+    
+            $statement->execute();
+            $id = $this->db->lastInsertId();
+            $this->db->commit();
 
-        $statement = $this->db->connection->prepare($query);
-
-        foreach ($data as $key => $value) {
-            $statement->bindParam(":{$key}", $value);
+            return $this->find($id);
+        } catch (\Throwable $th) {
+            $this->db->rollBack();
+            throw $th;
         }
-
-        $statement->execute();
     }
 
     /**
@@ -136,11 +157,21 @@ abstract class Model
      */
     public function delete($id)
     {
-        $query = "DELETE FROM {$this->table} WHERE id = :id";
+        try {
+            $this->db->beginTransaction();
+            $query = "DELETE FROM {$this->table} WHERE id = :id";
+    
+            $statement = $this->db->connection->prepare($query);
+            $statement->bindParam(':id', $id);
+            $statement->execute();
+            $this->db->commit();
+            return true;
+        } catch (\Throwable $th) {
+            $this->db->rollBack();
+            throw $th;
+        }
 
-        $statement = $this->db->connection->prepare($query);
-        $statement->bindParam(':id', $id);
-        return $statement->execute();
+        return false;
     }
 
     /**
@@ -151,9 +182,16 @@ abstract class Model
      */
     public function deleteWhere($field, $value)
     {
-        $query = "DELETE FROM {$this->table} WHERE {$field} = :value";
-        $statement = $this->db->connection->prepare($query);
-        $statement->bindParam(':value', $value);
-        $statement->execute();
+        try {
+            $this->db->beginTransaction();
+            $query = "DELETE FROM {$this->table} WHERE {$field} = :value";
+            $statement = $this->db->connection->prepare($query);
+            $statement->bindParam(':value', $value);
+            $statement->execute();
+            $this->db->commit();
+        } catch (\Throwable $th) {
+            $this->db->rollBack();
+            throw $th;
+        }
     }
 }
