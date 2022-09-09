@@ -164,6 +164,11 @@ class Response
     ];
 
     /**
+     * Request
+     */
+    protected $request;
+
+    /**
      * Constructor
      * @param string $content The response content
      * @param int $statusCode The response status code
@@ -174,12 +179,17 @@ class Response
         $this->setContent($content);
         $this->statusCode = $statusCode;
         $this->headers = $headers;
+        $this->request = container()->get('Awesome\Request');
     }
 
     /**
      * Create respose
+     * @param mixed $content The response content
+     * @param int $statusCode The response status code
+     * @param array $headers The response headers
+     * @return Response
      */
-    public static function create(string $content = '', int $statusCode = 200, array $headers = [])
+    public static function create($content = null, int $statusCode = 200, array $headers = [])
     {
         return new static($content, $statusCode, $headers);
     }
@@ -209,7 +219,7 @@ class Response
             );
         }
 
-        $this->content = (string) $content;
+        $this->content = $content;
 
         return $this;
     }
@@ -405,46 +415,12 @@ class Response
      */
     public function send()
     {
-        http_response_code($this->statusCode);
-        $this->sendHeaders();
-        // $this->sendContent();
-
         return $this;
     }
 
     /**
-     * Send the response headers
-     */
-    public function sendHeaders()
-    {
-        if (!headers_sent()) {
-            foreach ($this->headers as $name => $header) {
-                header($name . ': ' . $header);
-            }
-        }
-    }
-
-    /**
-     * Send the response content
-     */
-    public function sendContent()
-    {
-        return $this->content;
-    }
-
-    /**
-     * Verify if the content is valid
-     */
-    private function isValidContent($content)
-    {
-        return $content !== null
-            && !is_string($content)
-            && !is_numeric($content)
-            && !is_callable([$content, '__toString']);
-    }
-
-    /**
      * Send the response with the current status code and content
+     * @return string
      */
     public function __toString()
     {
@@ -452,12 +428,50 @@ class Response
     }
 
     /**
-     * Send the response with the current status code and content
+     * Send the response headers
+     * @return void
      */
-    public function toString()
+    public function sendHeaders()
     {
-        $this->send();
-        return '';
+        if (!headers_sent()) {
+            foreach ($this->headers as $name => $header) {
+                header($name . ': ' . $header);
+            }
+
+            header('Content-Type: ' . $this->mimeType . '; charset=' . $this->charset);
+        }
+    }
+
+    /**
+     * Send the response content
+     * @return mixed The response content
+     */
+    public function sendContent()
+    {
+        http_response_code($this->statusCode);
+        
+        if (is_array($this->content)) {
+            $this->setMimeType('application/json');
+            $this->setContent(json_encode($this->content));
+        }
+
+        $this->sendHeaders();
+
+        return $this->content;
+    }
+
+    /**
+     * Verify if the content is valid
+     * @param mixed $content The content to verify
+     * @return bool
+     */
+    private function isValidContent($content)
+    {
+        return $content !== null
+            && !is_string($content)
+            && !is_numeric($content)
+            && !is_array($content)
+            && !is_callable([$content, '__toString']);
     }
 
     /**
