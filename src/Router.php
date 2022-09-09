@@ -56,7 +56,7 @@ class Router
         $route = preg_replace('/\{([a-z]+):([^\}]+)\}/', '(?P<\1>\2)', $route);
         
         // Add start and end delimiters, and case insensitive flag
-        $route = '/^' . $route . '$/i';
+        $route = $method . '/^' . $route . '$/i';
 
         $params['method'] = $method;
         self::$routes[$route] = $params;
@@ -149,7 +149,10 @@ class Router
         //$reg_exp = '/^(?P<controller>[a-z-]+)\/(?P<action>[a-z-]+)$/';
         
         foreach (self::$routes as $route => $params) {
-            if (preg_match($route, $url, $matches) && self::$request->getMethod() == $params['method']) {
+            $match = preg_match(str_replace($params['method'], '', $route), $url, $matches);
+            $method  = self::$request->getMethod();
+
+            if ($match && $method == $params['method']) {
                 // Get named capture group values
 
                 foreach ($matches as $key => $match) {
