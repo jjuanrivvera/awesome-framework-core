@@ -5,113 +5,30 @@ namespace Awesome;
 class Config
 {
     /**
-     * Connection driver
+     * Config params
      */
-    protected $driver;
+    protected $params;
 
     /**
-     * Database host
+     * Get config value
+     * @param string $key Config key
+     * @return mixed
      */
-    protected $dbHost;
-
-    /**
-     * Database name
-     */
-    protected $dbName;
-
-    /**
-     * Database user
-     */
-    protected $dbUser;
-
-    /**
-     * Database password
-     */
-    protected $dbPassword;
-
-    /**
-     * Database port
-     */
-    protected $dbPort;
-
-    /**
-     * Database connection string
-     */
-    protected $connectionString;
-
-    public function getDbHost()
+    public function get($key)
     {
-        return $this->dbHost;
-    }
+        $keys = explode('.', $key);
 
-    public function setDbHost($dbHost)
-    {
-        $this->dbHost = $dbHost;
-    }
+        if (count($keys) === 0) {
+            return null;
+        }
 
-    public function getDbName()
-    {
-        return $this->dbName;
-    }
+        $value = $this->params[$keys[0]];
 
-    public function setDbName($dbName)
-    {
-        $this->dbName = $dbName;
-    }
+        for ($i = 1; $i < count($keys); $i++) {
+            $value = $value[$keys[$i]];
+        }
 
-    public function getDbUser()
-    {
-        return $this->dbUser;
-    }
-
-    public function setDbUser($dbUser)
-    {
-        $this->dbUser = $dbUser;
-    }
-
-    public function getDbPassword()
-    {
-        return $this->dbPassword;
-    }
-
-    public function setDbPassword($dbPassword)
-    {
-        $this->dbPassword = $dbPassword;
-    }
-
-    public function getDbPort()
-    {
-        return $this->dbPort;
-    }
-
-    public function setDbPort($dbPort)
-    {
-        $this->dbPort = $dbPort;
-    }
-
-    public function getDriver()
-    {
-        return $this->driver;
-    }
-
-    public function setDriver($driver)
-    {
-        $this->driver = $driver;
-    }
-
-    public function getConnectionString()
-    {
-        return $this->connectionString;
-    }
-
-    public function setConnectionString($connectionString)
-    {
-        $this->connectionString = $connectionString;
-    }
-
-    public function addConfigValue($key, $value)
-    {
-        $this->{$key} = $value;
+        return $value;
     }
 
     public function __construct()
@@ -119,11 +36,10 @@ class Config
         $configParams = [];
 
         foreach (glob($_SERVER['DOCUMENT_ROOT'] . '/../config/*.php') as $filename) {
-            $configParams = array_merge($configParams, include $filename);
+            $file = pathinfo($filename, PATHINFO_FILENAME);
+            $configParams[$file] = require $filename;
         }
 
-        foreach ($configParams as $key => $value) {
-            $this->{$key} = $value;
-        }
+        $this->params = $configParams;
     }
 }
