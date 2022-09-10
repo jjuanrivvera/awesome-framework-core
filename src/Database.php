@@ -26,9 +26,9 @@ class Database
     {
         try {
             $this->connection = new PDO(
-                $this->config->getConnectionString(),
-                $this->config->getDbUser(),
-                $this->config->getDbPassword()
+                $this->config->get('database.connectionString'),
+                $this->config->get('database.username'),
+                $this->config->get('database.password')
             );
         } catch (\PDOException $e) {
             throw new \Exception($e->getMessage(), (int) $e->getCode());

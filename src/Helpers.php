@@ -46,17 +46,13 @@ function container($class = null, $parameters = [])
  * @param  mixed  $value  Config value
  * @return mixed|void
  */
-function config($key = null, $value = null)
+function config($key = null)
 {
     $config = container('Awesome\Config');
 
     if (is_null($key)) {
         return $config;
     }
-
-    if (is_null($value)) {
-        return $config->{$key};
-    }
-
-    $config->addConfigValue($key, $value);
+    
+    return $config->get($key);
 }
