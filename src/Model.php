@@ -10,10 +10,23 @@ use PDO;
  */
 abstract class Model
 {
+
+    /**
+     * Table
+     * @var string
+     */
     protected $table;
 
     /**
+     * Database
+     * @var Database
+     */
+    protected $db;
+
+    /**
      * Model constructor.
+     * @param Database $db
+     * @throws \Exception
      */
     public function __construct(Database $db)
     {
@@ -53,7 +66,8 @@ abstract class Model
 
     /**
      * Get a record from the database by id
-     * @param  int $id
+     * @param $field
+     * @param $value
      * @return array
      */
     public function findWhere($field, $value)
@@ -83,12 +97,17 @@ abstract class Model
 
     /**
      * Update a record in the database
-     * @param  int $id
-     * @param  array $data
-     * @return void
+     * @param int $id
+     * @param array $data
+     * @return array
+     * @throws \Throwable
      */
     public function update($id, $data)
     {
+        if (!$this->find($id)) {
+            throw new \Exception('Record not found');
+        }
+
         try {
             $this->db->beginTransaction();
             $query = "UPDATE {$this->table} SET ";
@@ -99,11 +118,7 @@ abstract class Model
     
             $statement = $this->db->connection->prepare($query);
             $statement->bindParam(':id', $id);
-    
-            foreach ($data as $key => $value) {
-                $statement->bindParam(":{$key}", $value);
-            }
-    
+            $statement = $this->setStatementBindings($statement, $data);
             $statement->execute();
             $this->db->commit();
 
@@ -112,14 +127,13 @@ abstract class Model
             $this->db->rollback();
             throw $th;
         }
-
-        return $this->find($id);
     }
 
     /**
      * Create and return record in the database
-     * @param  array $data
+     * @param array $data
      * @return array
+     * @throws \Throwable
      */
     public function create($data)
     {
@@ -135,9 +149,7 @@ abstract class Model
     
             $statement = $this->db->connection->prepare($query);
     
-            foreach ($data as $key => $value) {
-                $statement->bindParam(":{$key}", $value);
-            }
+            $statement = $this->setStatementBindings($statement, $data);
     
             $statement->execute();
             $id = $this->db->lastInsertId();
@@ -152,8 +164,9 @@ abstract class Model
 
     /**
      * Delete a record from the database
-     * @param  int $id
+     * @param int $id
      * @return boolean
+     * @throws \Throwable
      */
     public function delete($id)
     {
@@ -176,9 +189,10 @@ abstract class Model
 
     /**
      * Delete a record from the database by field
-     * @param  string $field
-     * @param  string $value
+     * @param string $field
+     * @param string $value
      * @return void
+     * @throws \Throwable
      */
     public function deleteWhere($field, $value)
     {
@@ -193,5 +207,35 @@ abstract class Model
             $this->db->rollBack();
             throw $th;
         }
+    }
+
+    /**
+     * Set statement bindings
+     * @param mixed $statement
+     * @param array $data
+     * @return
+     */
+    private function setStatementBindings($statement, $data)
+    {
+        foreach ($data as $key => $value) {
+            $valueType = gettype($value);
+            $dataType = PDO::PARAM_STR;
+
+            switch ($valueType) {
+                case 'integer':
+                    $dataType = PDO::PARAM_INT;
+                    break;
+                case 'boolean':
+                    $dataType = PDO::PARAM_BOOL;
+                    break;
+                case 'NULL':
+                    $dataType = PDO::PARAM_NULL;
+                    break;
+            }
+
+            $statement->bindValue(":{$key}", $value, $dataType);
+        }
+
+        return $statement;
     }
 }
