@@ -3,6 +3,7 @@
 namespace Awesome;
 
 use PDO;
+use Awesome\NotFoundException;
 
 /**
  * Base Model
@@ -105,7 +106,7 @@ abstract class Model
     public function update($id, $data)
     {
         if (!$this->find($id)) {
-            throw new \Exception('Record not found');
+            throw new NotFoundException('Record not found');
         }
 
         try {

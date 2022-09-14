@@ -3,6 +3,9 @@
 namespace Awesome;
 
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 
 /*
@@ -12,12 +15,18 @@ use Twig\Loader\FilesystemLoader;
 class View
 {
     /**
+     * Default views path
+     */
+    private const DEFAULT_VIEWS_PATH = '../App/Views';
+
+    /**
      * View template
      */
     protected static $template;
 
     /**
      * Template engine instance
+     * @var Environment
      */
     protected static $engine;
 
@@ -39,7 +48,7 @@ class View
         static $twig = null;
         
         if ($twig === null) {
-            $loader = new FilesystemLoader('../App/Views');
+            $loader = new FilesystemLoader(self::DEFAULT_VIEWS_PATH);
             $twig = new Environment($loader);
         }
         
@@ -54,6 +63,9 @@ class View
      * Render a view template using Engine
      *
      * @return mixed
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public static function render()
     {
@@ -65,6 +77,11 @@ class View
      */
     public function __toString()
     {
-        return self::render();
+        try {
+            return self::render();
+        } catch (LoaderError $e) {
+        } catch (RuntimeError $e) {
+        } catch (SyntaxError $e) {
+        }
     }
 }

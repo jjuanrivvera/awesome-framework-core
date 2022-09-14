@@ -11,12 +11,15 @@ use Whoops\Handler\PrettyPageHandler;
  */
 class Error
 {
+    private const ERROR_LOG_FOLDER = 'logs';
+
     /**
      * Error handler
      * @param int $level Error level
      * @param string $message Error message
      * @param string $file Filename the error was raised in
      * @param int $line Line number in the file
+     * @throws \ErrorException
      */
     public static function errorHandler($level, $message, $file, $line)
     {
@@ -24,32 +27,34 @@ class Error
             throw new \ErrorException($message, 0, $level, $file, $line);
         }
     }
-    
+
     /**
      * Exception handler
      * @param \Exception $exception The exception
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public static function exceptionHandler($exception)
     {
-        $code = $exception->getCode();
-
-        if ($_ENV['APP_DEBUG'] === 'true') {
-            $whoops = new Run();
-            $whoops->allowQuit(false);
-            $whoops->writeToOutput(false);
-            $whoops->pushHandler(new PrettyPageHandler());
-            echo $whoops->handleException($exception);
-
-            return;
-        }
-
-        if ($code != 404) {
-            $code = 500;
-        }
+        $code = $exception->getCode() ?: 500;
 
         http_response_code($code);
 
         self::logError($exception);
+
+        $request = container('Awesome\Request');
+        $isDebugMode = $_ENV['APP_DEBUG'] === 'true';
+
+        if ($request->wantsJson()) {
+            self::exceptionToJson($exception, $isDebugMode);
+            return;
+        }
+
+        if ($isDebugMode) {
+            self::displayDebugError($exception);
+            return;
+        }
 
         echo View::make(
             "$code.html",
@@ -61,9 +66,47 @@ class Error
         )->render();
     }
 
+    /**
+     * Parse exception to JSON
+     * @param \Exception $exception
+     * @param bool $isDebugMode
+     * @return string
+     */
+    public static function exceptionToJson($exception, $isDebugMode)
+    {
+        $code = $exception->getCode() ?: 500;
+
+        $error = [
+            'error' => $exception->getMessage(),
+        ];
+
+        if ($isDebugMode) {
+            $error['trace'] = $exception->getTrace();
+        }
+
+        echo new Response($error, $code);
+    }
+
+    /**
+     * Display error in debug mode
+     * @param \Exception $exception
+     */
+    public function displayDebugError($exception)
+    {
+        $whoops = new Run();
+        $whoops->allowQuit(false);
+        $whoops->writeToOutput(false);
+        $whoops->pushHandler(new PrettyPageHandler());
+        echo $whoops->handleException($exception);
+    }
+
     public static function logError(\Exception $exception)
     {
-        $log = dirname($_SERVER['DOCUMENT_ROOT']) . '/logs/' . date('Y-m-d') . '.txt';
+        if (property_exists($exception, 'shouldLog') && $exception->shouldLog === false) {
+            return;
+        }
+        
+        $log = dirname($_SERVER['DOCUMENT_ROOT']) . '/' . self::ERROR_LOG_FOLDER . '/' . date('Y-m-d') . '.txt';
         ini_set('error_log', $log);
         $message = "Uncaught exception: '" . get_class($exception) . "'";
         $message .= " with message '" . $exception->getMessage() . "'";

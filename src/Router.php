@@ -184,6 +184,7 @@ class Router
      * Dispatch the route, creating the controller object and running the action method
      * @param string $url The route URL
      * @return void
+     * @throws \Exception
      */
     public static function dispatch($url)
     {

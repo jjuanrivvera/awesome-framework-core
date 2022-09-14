@@ -2,6 +2,11 @@
 
 namespace Awesome;
 
+/**
+ * Class Config
+ * @package Awesome
+ * @author Juan Felipe Rivera G
+ */
 class Config
 {
     /**
@@ -31,6 +36,9 @@ class Config
         return $value;
     }
 
+    /**
+     * Config constructor.
+     */
     public function __construct()
     {
         $configParams = [];

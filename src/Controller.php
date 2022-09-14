@@ -11,6 +11,11 @@ use Awesome\Response;
  */
 abstract class Controller
 {
+    /**
+     * Function Suffix
+     * @var string
+     */
+    public const FUNCTIONS_SUFFIX = 'Action';
 
     /**
      * Request
@@ -36,10 +41,11 @@ abstract class Controller
      * @param string $name Method name
      * @param array $args Arguments passed to the method
      * @return void
+     * @throws \Exception
      */
     public function __call($name, $args)
     {
-        $method = $name . 'Action';
+        $method = $name . self::FUNCTIONS_SUFFIX;
 
         if (method_exists($this, $method)) {
             if ($this->before() !== false) {
@@ -63,6 +69,11 @@ abstract class Controller
      * After filter - called after an action method.
      * @param Response|View|string|null $response Response object
      * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     protected function after($response)
     {
