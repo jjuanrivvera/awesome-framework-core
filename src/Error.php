@@ -56,12 +56,36 @@ class Error
             return;
         }
 
+        self::renderException($exception, $code);
+    }
+
+    /**
+     * Render exception
+     * @param \Exception $exception
+     * @param int $code
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    private static function renderException(\Exception $exception, int $code)
+    {
+        $view = View::exists("$code.html") ? "$code.html" : '500.html';
+
+        $errors = [];
+        $message = $exception->getMessage();
+
+        if (json_decode($exception->getMessage())) {
+            $message = "Validation error";
+            $errors = json_decode($exception->getMessage(), true);
+        }
+
         echo View::make(
-            "$code.html",
+            $view,
             [
                 'title' => $code,
                 'code' => $code,
-                'message' => $exception->getMessage()
+                'message' => $message,
+                'errors' => $errors
             ]
         )->render();
     }
@@ -76,15 +100,20 @@ class Error
     {
         $code = $exception->getCode() ?: 500;
 
-        $error = [
-            'error' => $exception->getMessage(),
+        $response = [
+            'message' => $exception->getMessage(),
         ];
 
-        if ($isDebugMode) {
-            $error['trace'] = $exception->getTrace();
+        if (json_decode($exception->getMessage())) {
+            $response['message'] = "Validation error";
+            $response['errors'] = json_decode($exception->getMessage(), true);
         }
 
-        echo new Response($error, $code);
+        if ($isDebugMode) {
+            $response['trace'] = $exception->getTrace();
+        }
+
+        echo new Response($response, $code);
     }
 
     /**

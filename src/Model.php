@@ -3,7 +3,7 @@
 namespace Awesome;
 
 use PDO;
-use Awesome\NotFoundException;
+use Awesome\Exceptions\NotFoundException;
 
 /**
  * Base Model

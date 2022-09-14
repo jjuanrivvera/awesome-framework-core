@@ -1,12 +1,11 @@
 <?php
 
+namespace Awesome;
+
 /**
  * Request class
  * @package Awesome
  */
-
-namespace Awesome;
-
 class Request
 {
     /**
