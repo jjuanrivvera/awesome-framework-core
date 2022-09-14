@@ -30,6 +30,8 @@ function env($key, $default = null)
  * @param string|null $class Class to resolve
  * @param array $parameters Parameters to pass to the constructor
  * @return mixed|DI\Container
+ * @throws \DI\DependencyException
+ * @throws \DI\NotFoundException
  */
 function container($class = null, $parameters = [])
 {
@@ -42,9 +44,10 @@ function container($class = null, $parameters = [])
 
 /**
  * Get or set config value
- * @param  string $key     Config key
- * @param  mixed  $value  Config value
+ * @param string $key Config key
  * @return mixed|void
+ * @throws \DI\DependencyException
+ * @throws \DI\NotFoundException
  */
 function config($key = null)
 {

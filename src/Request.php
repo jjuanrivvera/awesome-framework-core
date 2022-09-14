@@ -143,7 +143,11 @@ class Request
 
         foreach ($_SERVER as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
-                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+                $headers[str_replace(
+                    ' ',
+                    '-',
+                    ucwords(strtolower(str_replace('_', ' ', substr($name, 5))))
+                )] = $value;
             }
         }
 
@@ -157,5 +161,14 @@ class Request
     public function getBody()
     {
         return $this->body;
+    }
+
+    /**
+     * Validate if the request wants JSON
+     * @return bool
+     */
+    public function wantsJson()
+    {
+        return $this->headers['Accept'] === 'application/json';
     }
 }

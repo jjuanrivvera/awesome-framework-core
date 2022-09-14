@@ -1,7 +1,7 @@
 <?php
 
 /**
- * App
+ * Class App
  * @package Awesome
  * @author  Juan Felipe Rivera G
  */
@@ -15,6 +15,12 @@ use DI\ContainerBuilder;
 class App
 {
     /**
+     * Default application environment
+     * @var string
+     */
+    private const DEFAULT_APP_ENVIRONMENT = 'production';
+
+    /**
      * @var Container
      */
     protected static $container;
@@ -23,15 +29,16 @@ class App
      * @var Router
      */
     protected static $router;
-    
+
     /**
      * App Constructor
+     * @throws Exception
      */
     public function __construct()
     {
         $container = new Container();
 
-        $env = $_ENV['APP_ENV'] ?: 'production';
+        $env = $_ENV['APP_ENV'] ?: self::DEFAULT_APP_ENVIRONMENT;
 
         if ($env === 'production') {
             $builder = new ContainerBuilder();
@@ -47,16 +54,17 @@ class App
      * Get container instance
      * @return Container
      */
-    public static function getContainer()
+    public static function getContainer(): Container
     {
         return self::$container;
     }
 
     /**
      * Load routes
+     * @param string $routePath
      * @return void
      */
-    public static function loadRoutes($routePath = null)
+    public static function loadRoutes($routePath = null): void
     {
         $routePath = $routePath ?: dirname($_SERVER['DOCUMENT_ROOT']) . '/routes/web.php';
 
@@ -71,7 +79,7 @@ class App
      * Load error and exception handler
      * @return void
      */
-    public function loadErrorAndExceptionHandler()
+    public function loadErrorAndExceptionHandler(): void
     {
         error_reporting(E_ALL);
         set_error_handler('Awesome\Error::errorHandler');
@@ -81,22 +89,32 @@ class App
     /**
      * Runs the application
      * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     * @throws Exception
      */
-    public static function initializeRouter()
+    public static function initializeRouter(): void
     {
         self::$router = self::$container->get(Router::class);
         self::$router->dispatch(str_replace('url=', '', $_SERVER['QUERY_STRING']));
     }
 
-   /**
+    /**
      * Load repositories
+     * @param null $contractsPath
+     * @param string $contractsNamespace
+     * @param string $repositoriesNamespace Namespace of repositories
+     * @param string $contractsSuffix
+     * @param string $repositoriesSuffix
+     * @return void
+     * @throws Exception
      */
     public static function loadRepositories(
         $contractsPath = null,
         $contractsNamespace = 'App\Contracts\\',
         $repositoriesNamespace = 'App\Repositories\\',
-        $contractsSufix = 'Contract',
-        $repositoriesSufix = 'Repository'
+        $contractsSuffix = 'Contract',
+        $repositoriesSuffix = 'Repository'
     ) {
         $contractsPath = $contractsPath ?: dirname($_SERVER['DOCUMENT_ROOT']) . '/App/Contracts/*.php';
 
@@ -107,7 +125,7 @@ class App
         foreach ($files as $file) {
             $class = basename($file, '.php');
             $contract = $contractsNamespace . $class;
-            $repository = $repositoriesNamespace . str_replace($contractsSufix, $repositoriesSufix, $class);
+            $repository = $repositoriesNamespace . str_replace($contractsSuffix, $repositoriesSuffix, $class);
             
             try {
                 $repositoryClass = self::$container->get($repository);
@@ -121,8 +139,10 @@ class App
     /**
      * Runs the application
      * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
-    public function run()
+    public function run(): void
     {
         self::loadErrorAndExceptionHandler();
         self::loadRoutes();

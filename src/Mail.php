@@ -10,24 +10,27 @@ class Mail
 {
     /**
      * Config
+     * @var Config
      */
     protected $config;
 
     /**
      * Mail constructor
+     * @param Config $config
      */
     public function __construct(Config $config)
     {
         $this->config = $config;
     }
-    
+
     /**
      * Send email
      * @param string|array $to
      * @param string $subject
      * @param string $body
-     * @param string $atachments
+     * @param array $attachments
      * @return void
+     * @throws \Exception
      */
     public function send($to, $subject, $body, $attachments = []): void
     {

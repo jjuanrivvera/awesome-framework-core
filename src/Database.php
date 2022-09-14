@@ -8,11 +8,18 @@ class Database
 {
     /**
      * Connection
+     * @var PDO
      */
     public $connection;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * Database constructor
+     * @param Config $config
      */
     public function __construct(Config $config)
     {
@@ -21,6 +28,7 @@ class Database
 
     /**
      * Connect to the database
+     * @throws \Exception
      */
     public function connect()
     {

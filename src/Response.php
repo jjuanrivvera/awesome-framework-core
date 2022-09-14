@@ -72,32 +72,32 @@ class Response
      * @var string
      */
     protected $content;
-    
+
     /**
      * @var int
      */
     protected $statusCode;
-    
+
     /**
      * @var array
      */
     protected $headers = [];
-    
+
     /**
      * @var string
      */
     protected $mimeType = 'text/html';
-    
+
     /**
      * @var string
      */
     protected $charset = 'utf-8';
-    
+
     /**
      * @var string
      */
     protected $statusText = '';
-    
+
     /**
      * @var array
      */
@@ -173,6 +173,8 @@ class Response
      * @param string $content The response content
      * @param int $statusCode The response status code
      * @param array $headers The response headers
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     public function __construct($content = '', int $statusCode = 200, array $headers = [])
     {
@@ -183,11 +185,13 @@ class Response
     }
 
     /**
-     * Create respose
+     * Create response
      * @param mixed $content The response content
      * @param int $statusCode The response status code
      * @param array $headers The response headers
      * @return Response
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     public static function create($content = null, int $statusCode = 200, array $headers = [])
     {
@@ -205,7 +209,7 @@ class Response
 
     /**
      * Set the response content
-     * @param string $content The response content
+     * @param string|array $content The response content
      * @return Response The current response
      */
     public function setContent($content)
@@ -331,7 +335,7 @@ class Response
 
     /**
      * Get the response status text
-     * @return string The response status text
+     * @return array The response status text
      */
     public function getStatusTexts()
     {
@@ -340,7 +344,7 @@ class Response
 
     /**
      * Set the response status text
-     * @param string $statusText The response status text
+     * @param array $statusTexts
      * @return Response The current response
      */
     public function setStatusTexts(array $statusTexts)
@@ -351,6 +355,7 @@ class Response
 
     /**
      * Get the response status text
+     * @param $statusCode
      * @return string The response status text
      */
     public function getStatusTextByCode($statusCode)
@@ -360,6 +365,7 @@ class Response
 
     /**
      * Set the response status text
+     * @param $statusCode
      * @param string $statusText The response status text
      * @return Response The current response
      */
@@ -371,6 +377,7 @@ class Response
 
     /**
      * Get the response headers
+     * @param $name
      * @return array The response headers
      */
     public function getHeader($name)
@@ -380,7 +387,8 @@ class Response
 
     /**
      * Set the response headers
-     * @param array $headers The response headers
+     * @param $name
+     * @param $header
      * @return Response The current response
      */
     public function setHeader($name, $header)
@@ -391,6 +399,7 @@ class Response
 
     /**
      * Get the response headers
+     * @param $name
      * @return array The response headers
      */
     public function getHeaderByName($name)
@@ -400,7 +409,8 @@ class Response
 
     /**
      * Set the response headers
-     * @param array $headers The response headers
+     * @param $name
+     * @param $header
      * @return Response The current response
      */
     public function setHeaderByName($name, $header)
@@ -449,7 +459,7 @@ class Response
     public function sendContent()
     {
         http_response_code($this->statusCode);
-        
+
         if (is_array($this->content)) {
             $this->setMimeType('application/json');
             $this->setContent(json_encode($this->content));

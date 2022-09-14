@@ -26,17 +26,18 @@ abstract class Repository implements Contract
      * @param  int $id
      * @return array
      */
-    public function find($id)
+    public function find(int $id)
     {
         return $this->model->find($id);
     }
 
     /**
      * Get a record from the database by id
-     * @param  int $id
+     * @param string $field
+     * @param string $value
      * @return array
      */
-    public function findWhere($field, $value)
+    public function findWhere(string $field, string $value)
     {
         return $this->model->findWhere($field, $value);
     }
@@ -58,7 +59,7 @@ abstract class Repository implements Contract
      * @param  array $data
      * @return void
      */
-    public function update($id, $data)
+    public function update($id, array $data)
     {
         return $this->model->update($id, $data);
     }
@@ -68,7 +69,7 @@ abstract class Repository implements Contract
      * @param  array $data
      * @return void
      */
-    public function create($data)
+    public function create(array $data)
     {
         return $this->model->create($data);
     }
@@ -78,7 +79,7 @@ abstract class Repository implements Contract
      * @param  int $id
      * @return boolean
      */
-    public function delete($id)
+    public function delete(int $id)
     {
         return $this->model->delete($id);
     }
@@ -89,7 +90,7 @@ abstract class Repository implements Contract
      * @param  string $value
      * @return boolean
      */
-    public function deleteWhere($field, $value)
+    public function deleteWhere(string $field, string $value)
     {
         return $this->model->deleteWhere($field, $value);
     }
