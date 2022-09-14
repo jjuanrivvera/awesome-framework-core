@@ -1,9 +1,13 @@
 <?php
 
-namespace Awesome;
+namespace Awesome\Exceptions;
 
 class NotFoundException extends \Exception
 {
+    /**
+     * Conditionally log the exception
+     * @var bool
+     */
     public $shouldLog = false;
 
     /**
