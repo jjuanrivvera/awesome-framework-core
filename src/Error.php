@@ -11,6 +11,9 @@ use Whoops\Handler\PrettyPageHandler;
  */
 class Error
 {
+    /**
+     * Error log folder
+     */
     private const ERROR_LOG_FOLDER = 'logs';
 
     /**
@@ -31,6 +34,8 @@ class Error
     /**
      * Exception handler
      * @param \Exception $exception The exception
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
@@ -94,9 +99,11 @@ class Error
      * Parse exception to JSON
      * @param \Exception $exception
      * @param bool $isDebugMode
-     * @return string
+     * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
-    public static function exceptionToJson($exception, $isDebugMode)
+    public static function exceptionToJson($exception, $isDebugMode): void
     {
         $code = $exception->getCode() ?: 500;
 
@@ -120,7 +127,7 @@ class Error
      * Display error in debug mode
      * @param \Exception $exception
      */
-    public function displayDebugError($exception)
+    public static function displayDebugError($exception): void
     {
         $whoops = new Run();
         $whoops->allowQuit(false);
@@ -129,7 +136,11 @@ class Error
         echo $whoops->handleException($exception);
     }
 
-    public static function logError(\Exception $exception)
+    /**
+     * Log the error
+     * @param \Exception $exception
+     */
+    public static function logError(\Exception $exception): void
     {
         if (property_exists($exception, 'shouldLog') && $exception->shouldLog === false) {
             return;

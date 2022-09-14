@@ -214,7 +214,7 @@ abstract class Model
      * Set statement bindings
      * @param mixed $statement
      * @param array $data
-     * @return
+     * @return mixed
      */
     private function setStatementBindings($statement, $data)
     {
