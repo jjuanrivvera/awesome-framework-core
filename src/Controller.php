@@ -47,6 +47,12 @@ abstract class Controller
     {
         $method = $name . self::FUNCTIONS_SUFFIX;
 
+        $reflection = new \ReflectionMethod(get_class($this), $method);
+
+        $params = $reflection->getParameters();
+
+        $args = $this->resolveMethodDependencies($params, $args);
+
         if (method_exists($this, $method)) {
             if ($this->before() !== false) {
                 $response = call_user_func_array([$this, $method], $args);
@@ -55,6 +61,34 @@ abstract class Controller
         } else {
             throw new \Exception("Method $method not found in controller " . get_class($this));
         }
+    }
+
+    /**
+     * Resolve method dependencies
+     * @param array $params
+     * @param array $args
+     * @return array
+     */
+    protected function resolveMethodDependencies($params, $args)
+    {
+        $dependencies = [];
+
+        foreach ($params as $param) {
+            $dependency = $param->getClass();
+
+            if ($dependency === null) {
+                $params = $this->request->getRouteParams();
+                if (isset($params[$param->name])) {
+                    $dependencies[] = $params[$param->name];
+                } else {
+                    $dependencies[] = array_shift($args);
+                }
+            } else {
+                $dependencies[] = container($dependency->name);
+            }
+        }
+
+        return $dependencies;
     }
 
     /**

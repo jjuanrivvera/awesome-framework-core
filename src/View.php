@@ -8,8 +8,8 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use Twig\Loader\FilesystemLoader;
 
-/*
-* View
+/**
+* Class View
 * @package Awesome
 */
 class View
@@ -21,6 +21,7 @@ class View
 
     /**
      * View template
+     * @var string
      */
     protected static $template;
 
@@ -32,18 +33,17 @@ class View
 
     /**
      * Template variables
+     * @var array
      */
     protected static $data = [];
     
     /**
      * Render a view template using Twig
-     *
      * @param string $template The template file
      * @param array $args Associative array of data to display in the view (optional)
-     *
      * @return View
      */
-    public static function make($template, $args = [])
+    public static function make(string $template, array $args = [])
     {
         static $twig = null;
         
@@ -61,7 +61,6 @@ class View
 
     /**
      * Render a view template using Engine
-     *
      * @return mixed
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
@@ -83,5 +82,15 @@ class View
         } catch (RuntimeError $e) {
         } catch (SyntaxError $e) {
         }
+    }
+
+    /**
+     * View exists
+     * @param string $template
+     * @return bool
+     */
+    public static function exists($template)
+    {
+        return file_exists(self::DEFAULT_VIEWS_PATH . "/$template");
     }
 }

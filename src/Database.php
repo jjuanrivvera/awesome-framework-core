@@ -4,6 +4,11 @@ namespace Awesome;
 
 use PDO;
 
+/**
+ * Class Databse
+ * @package Awesome
+ * @author  Juan Felipe Rivera G
+ */
 class Database
 {
     /**

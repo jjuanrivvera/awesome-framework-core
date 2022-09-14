@@ -1,17 +1,16 @@
 <?php
 
-/**
- * Class App
- * @package Awesome
- * @author  Juan Felipe Rivera G
- */
-
 namespace Awesome;
 
 use Exception;
 use DI\Container;
 use DI\ContainerBuilder;
 
+/**
+ * Class App
+ * @package Awesome
+ * @author  Juan Felipe Rivera G
+ */
 class App
 {
     /**

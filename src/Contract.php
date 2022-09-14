@@ -2,6 +2,11 @@
 
 namespace Awesome;
 
+/**
+ * Contract interface
+ * @package Awesome
+ * @author Juan Felipe Rivera G
+ */
 interface Contract
 {
     /**
