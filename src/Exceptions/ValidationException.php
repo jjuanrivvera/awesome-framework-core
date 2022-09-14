@@ -12,12 +12,12 @@ class ValidationException extends \Exception
 
     /**
      * ValidationException constructor.
-     * @param string $message
+     * @param array $errors
      * @param int $code
      * @param Exception|null $previous
      */
-    public function __construct($message = "", $code = 422, \Exception $previous = null)
+    public function __construct($errors = [], $code = 422, \Exception $previous = null)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct(json_encode($errors), $code, $previous);
     }
 }
