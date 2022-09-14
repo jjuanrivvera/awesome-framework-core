@@ -45,7 +45,7 @@ abstract class Controller
      */
     public function __call($name, $args)
     {
-        $method = $name . self::FUNCTIONS_SUFFIX;
+        $method = str_replace(self::FUNCTIONS_SUFFIX, '', $name);
 
         $reflection = new \ReflectionMethod(get_class($this), $method);
 
@@ -68,6 +68,8 @@ abstract class Controller
      * @param array $params
      * @param array $args
      * @return array
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     protected function resolveMethodDependencies($params, $args)
     {

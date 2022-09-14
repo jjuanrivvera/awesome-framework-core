@@ -207,6 +207,7 @@ class Router
                 $action = self::convertToCamelCase($action);
                 
                 if (preg_match('/action$/i', $action) == 0) {
+                    $action = $action . Controller::FUNCTIONS_SUFFIX;
                     $controller_object->$action();
                 } else {
                     throw new \Exception("Method $action (in controller $controller) not found");

@@ -18,7 +18,8 @@
         "twig/twig": "^3.0",
         "php-di/php-di": "^6.3",
         "filp/whoops": "^2.14",
-        "phpmailer/phpmailer": "^6.6"
+        "phpmailer/phpmailer": "^6.6",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
