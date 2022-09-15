@@ -11,7 +11,7 @@ class Router
 {
     /**
      * Associative array of routes (the routing table)
-     * @var array
+     * @var Route[]
      */
     protected static $routes = [];
 
@@ -39,12 +39,38 @@ class Router
 
     /**
      * Add a route to the routing table
-     * @param string $route The route URL
-     * @param array $params Parameters (controller, action, etc.)
+     * @param string $uri The route URL
+     * @param string|callable $action The route callback action
      * @param string $method The request method
      * @return void
      */
-    public static function add($route, $params = [], $method = 'GET')
+    public static function add($uri, $action = null, $method = 'GET')
+    {
+        $regexPath = self::buildRegexPath($uri);
+        $path = $uri;
+        $callback = null;
+        $params = [];
+
+        if (is_callable($action)) {
+            $callback = $action;
+        } else {
+            $params = explode('@', $action);
+            $params = [
+                'controller' => $params[0],
+                'action' => $params[1]
+            ];
+        }
+
+        $route = new Route(compact('path', 'method', 'callback', 'regexPath', 'params'));
+        
+        self::$routes[] = $route;
+    }
+
+    /**
+     * Build Regex Path
+     * @param string route
+     */
+    public static function buildRegexPath($route)
     {
         // Convert the route to a regular expression: escape forward slashes
         $route = preg_replace('/\//', '\\/', $route);
@@ -54,12 +80,11 @@ class Router
 
         // Convert variables with custom regular expressions e.g. {id:\d+}
         $route = preg_replace('/\{([a-z]+):([^\}]+)\}/', '(?P<\1>\2)', $route);
-        
-        // Add start and end delimiters, and case insensitive flag
-        $route = $method . '/^' . $route . '$/i';
 
-        $params['method'] = $method;
-        self::$routes[$route] = $params;
+        // Add start and end delimiters, and case insensitive flag
+        $route = '/^' . $route . '$/i';
+
+        return $route;
     }
 
     /**
@@ -141,30 +166,27 @@ class Router
      * Match the route to the routes in the routing table, setting the params
      * property if a route is found.
      * @param string $url The route URL
-     * @return boolean  true if a match found, false otherwise
+     * @return Route|bool The route object
      */
     public static function match($url)
     {
-        // Match to the fixed URL format /controller/action
-        //$reg_exp = '/^(?P<controller>[a-z-]+)\/(?P<action>[a-z-]+)$/';
-        
-        foreach (self::$routes as $route => $params) {
-            $match = preg_match(str_replace($params['method'], '', $route), $url, $matches);
+        foreach (self::$routes as $route) {
+            $match = preg_match($route->getRegexPath(), $url, $matches);
             $method  = self::$request->getMethod();
 
-            if ($match && $method == $params['method']) {
+            if ($match && $method == $route->getMethod()) {
                 // Get named capture group values
-
+                $params = [];
+                
                 foreach ($matches as $key => $match) {
                     if (is_string($key)) {
                         $params[$key] = $match;
                     }
                 }
 
-                self::$params = $params;
                 self::$request->setRouteParams($params);
 
-                return true;
+                return $route;
             }
         }
 
@@ -183,63 +205,39 @@ class Router
     /**
      * Dispatch the route, creating the controller object and running the action method
      * @param string $url The route URL
-     * @return void
+     * @return mixed
      * @throws \Exception
      */
     public static function dispatch($url)
     {
         $url = self::removeQueryStringVariables($url);
+        $route = self::match($url);
         
-        if (self::match($url)) {
-            $controller = self::$params['controller'];
-
-            if (strpos($controller, 'Controller') === false) {
-                $controller .= 'Controller';
-            }
-
-            $controller = self::convertToStudlyCaps($controller);
-            $controller = self::getNamespace() . $controller;
-            
-            if (class_exists($controller)) {
-                $controller_object = container($controller);
-
-                $action = self::$params['action'];
-                $action = self::convertToCamelCase($action);
-                
-                if (preg_match('/action$/i', $action) == 0) {
-                    $action = $action . Controller::FUNCTIONS_SUFFIX;
-                    $controller_object->$action();
-                } else {
-                    throw new \Exception("Method $action (in controller $controller) not found");
-                }
-            } else {
-                throw new \Exception("Controller class $controller not found");
-            }
-        } else {
+        if (!$route) {
             throw new \Exception('Page not found', 404);
         }
-    }
 
-    /**
-     * Convert the string with hyphens to StudlyCaps,
-     * e.g. post-authors => PostAuthors
-     * @param string $string The string to convert
-     * @return string
-     */
-    protected static function convertToStudlyCaps($string)
-    {
-        return str_replace(' ', '', ucwords(str_replace('-', ' ', $string)));
-    }
+        if ($route->hasCallable()) {
+            return $route->call();
+        }
 
-    /**
-     * Convert the string with hyphens to camelCase,
-     * e.g. add-new => addNew
-     * @param string $string The string to convert
-     * @return string
-     */
-    protected static function convertToCamelCase($string)
-    {
-        return lcfirst(self::convertToStudlyCaps($string));
+        $params = $route->getParams();
+        $controller = $params['controller'];
+        $controller = self::getNamespace() . $controller;
+        $action = $params['action'];
+
+        if (!class_exists($controller)) {
+            throw new \Exception("Controller class $controller not found");
+        }
+
+        if (!preg_match('/action$/i', $action) == 0) {
+            throw new \Exception("Method $action (in controller $controller) not found");
+        }
+
+        $controller_instance = container($controller);
+        $action = $action . Controller::FUNCTIONS_SUFFIX;
+
+        return $controller_instance->$action();
     }
 
     /**
@@ -287,11 +285,11 @@ class Router
     private static function getNamespace()
     {
         $namespace = 'App\Controllers\\';
-        
+
         if (array_key_exists('namespace', self::$params)) {
             $namespace .= self::$params['namespace'] . '\\';
         }
-        
+
         return $namespace;
     }
 }
