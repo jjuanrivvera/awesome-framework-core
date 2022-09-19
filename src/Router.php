@@ -4,13 +4,13 @@ namespace Awesome;
 
 /**
  * Router
- * @package    Awesome
- * @author     Juan Felipe Rivera G
+ * @package Awesome
+ * @author Juan Felipe Rivera G
  */
 class Router
 {
     /**
-     * Associative array of routes (the routing table)
+     * Array of routes
      * @var Route[]
      */
     protected static $routes = [];
@@ -39,15 +39,15 @@ class Router
 
     /**
      * Add a route to the routing table
-     * @param string $uri The route URL
+     * @param string $path The route URL
      * @param string|callable $action The route callback action
      * @param string $method The request method
      * @return void
+     * @throws \Throwable
      */
-    public static function add($uri, $action = null, $method = 'GET')
+    public static function add($path, $action, $method = 'GET')
     {
-        $regexPath = self::buildRegexPath($uri);
-        $path = $uri;
+        $regexPath = self::buildRegexPath($path);
         $callback = null;
         $params = [];
 
@@ -55,6 +55,11 @@ class Router
             $callback = $action;
         } else {
             $params = explode('@', $action);
+
+            if (count($params) != 2) {
+                throw new \Exception('Invalid action');
+            }
+
             $params = [
                 'controller' => $params[0],
                 'action' => $params[1]
@@ -68,23 +73,29 @@ class Router
 
     /**
      * Build Regex Path
-     * @param string route
+     * @param string path
+     * @return string|string[]|null
      */
-    public static function buildRegexPath($route)
+    public static function buildRegexPath($path)
     {
-        // Convert the route to a regular expression: escape forward slashes
-        $route = preg_replace('/\//', '\\/', $route);
+        // Root path to empty string
+        if ($path === '/') {
+            $path = '';
+        }
+
+        // Convert the path to a regular expression: escape forward slashes
+        $path = preg_replace('/\//', '\\/', $path);
 
         // Convert variables e.g. {controller}
-        $route = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[a-z-]+)', $route);
+        $path = preg_replace('/\{([a-z]+)\}/', '(?P<\1>[a-z-]+)', $path);
 
         // Convert variables with custom regular expressions e.g. {id:\d+}
-        $route = preg_replace('/\{([a-z]+):([^\}]+)\}/', '(?P<\1>\2)', $route);
+        $path = preg_replace('/\{([a-z]+):([^\}]+)\}/', '(?P<\1>\2)', $path);
 
         // Add start and end delimiters, and case insensitive flag
-        $route = '/^' . $route . '$/i';
+        $path = '/^' . $path . '$/i';
 
-        return $route;
+        return $path;
     }
 
     /**
@@ -92,6 +103,7 @@ class Router
      * @param string $route The route URL
      * @param array $params Parameters (controller, action, etc.)
      * @return void
+     * @throws \Throwable
      */
     public static function get($route, $params = [])
     {
@@ -103,6 +115,7 @@ class Router
      * @param string $route The route URL
      * @param array $params Parameters (controller, action, etc.)
      * @return void
+     * @throws \Throwable
      */
     public static function post($route, $params = [])
     {
@@ -114,6 +127,7 @@ class Router
      * @param string $route The route URL
      * @param array $params Parameters (controller, action, etc.)
      * @return void
+     * @throws \Throwable
      */
     public static function put($route, $params = [])
     {
@@ -125,6 +139,7 @@ class Router
      * @param string $route The route URL
      * @param array $params Parameters (controller, action, etc.)
      * @return void
+     * @throws \Throwable
      */
     public static function delete($route, $params = [])
     {
@@ -136,6 +151,7 @@ class Router
      * @param string $route The route URL
      * @param array $params Parameters (controller, action, etc.)
      * @return void
+     * @throws \Throwable
      */
     public static function patch($route, $params = [])
     {
@@ -147,6 +163,7 @@ class Router
      * @param string $route The route URL
      * @param array $params Parameters (controller, action, etc.)
      * @return void
+     * @throws \Throwable
      */
     public static function options($route, $params = [])
     {
@@ -218,20 +235,16 @@ class Router
         }
 
         if ($route->hasCallable()) {
-            return $route->call();
+            $args = (new \ReflectionFunction($route->getCallback()))->getParameters();
+            $args = resolveMethodDependencies($args, self::$request);
+            return call_user_func_array($route->getCallback(), $args);
         }
 
-        $params = $route->getParams();
-        $controller = $params['controller'];
+        list('controller' => $controller, 'action' => $action) = $route->getParams();
         $controller = self::getNamespace() . $controller;
-        $action = $params['action'];
 
         if (!class_exists($controller)) {
             throw new \Exception("Controller class $controller not found");
-        }
-
-        if (!preg_match('/action$/i', $action) == 0) {
-            throw new \Exception("Method $action (in controller $controller) not found");
         }
 
         $controller_instance = container($controller);

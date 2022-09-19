@@ -41,6 +41,7 @@ class Route
     /**
      * Route constructor
      * @param mixed $args
+     * @throws \Throwable
      */
     public function __construct($args)
     {
@@ -133,12 +134,15 @@ class Route
 
     /**
      * Call route callback
+     * @param array $args
      * @return mixed
      */
-    public function call()
+    public function call($args)
     {
-        if ($this->hasCallable()) {
-            call_user_func_array($this->callback, []);
+        if (!$this->hasCallable()) {
+            return null;
         }
+        
+        return call_user_func_array($this->callback, $args);
     }
 }
