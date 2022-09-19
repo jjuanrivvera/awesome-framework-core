@@ -37,7 +37,7 @@ class App
     {
         $container = new Container();
 
-        $env = $_ENV['APP_ENV'] ?: self::DEFAULT_APP_ENVIRONMENT;
+        $env = isset($_ENV['APP_ENV']) ? $_ENV['APP_ENV'] : self::DEFAULT_APP_ENVIRONMENT;
 
         if ($env === 'production') {
             $builder = new ContainerBuilder();
@@ -56,6 +56,27 @@ class App
     public static function getContainer(): Container
     {
         return self::$container;
+    }
+
+    /**
+     * Get router instance
+     * @return Router
+     */
+    public static function getRouter(): Router
+    {
+        return self::$router;
+    }
+
+    /**
+     * Add router instance
+     * @param $class
+     * @return void
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     */
+    public function addRouter($class): void
+    {
+        self::$router = self::$container->get($class);
     }
 
     /**
@@ -94,7 +115,7 @@ class App
      */
     public static function initializeRouter(): void
     {
-        self::$router = self::$container->get(Router::class);
+        self::$router = self::$router ?: self::$container->get(Router::class);
         self::$router->dispatch(str_replace('url=', '', $_SERVER['QUERY_STRING']));
     }
 

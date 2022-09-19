@@ -1,9 +1,13 @@
 <?php
 
 use Awesome\App;
+use Awesome\Request;
 
 /**
  * Dummy function used to test
+ * @param $a
+ * @param $b
+ * @return mixed
  */
 function add($a, $b)
 {
@@ -58,4 +62,47 @@ function config($key = null)
     }
     
     return $config->get($key);
+}
+
+/**
+ * Replace first occurrence of a string
+ * @param string $search
+ * @param string $replace
+ * @param string $subject
+ * @return string
+ */
+function str_replace_first($search, $replace, $subject)
+{
+    return implode($replace, explode($search, $subject, 2));
+}
+
+/**
+ * Resolve method dependencies
+ * @param \ReflectionParameter[] $params
+ * @param Request $request
+ * @return array
+ * @throws \DI\DependencyException
+ * @throws \DI\NotFoundException
+ * @throws ReflectionException
+ */
+function resolveMethodDependencies($params, Request $request)
+{
+    $dependencies = [];
+
+    foreach ($params as $param) {
+        $dependency = $param->getClass();
+
+        if ($dependency === null) {
+            $params = $request->getRouteParams();
+            if (isset($params[$param->name])) {
+                $dependencies[] = $params[$param->name];
+            } else {
+                $dependencies[] = $param->getDefaultValue() ?? null;
+            }
+        } else {
+            $dependencies[] = container($dependency->name);
+        }
+    }
+
+    return $dependencies;
 }
