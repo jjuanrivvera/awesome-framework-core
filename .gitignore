@@ -4,3 +4,12 @@ vendor/
 # Editors
 .vscode
 .idea
+
+# Other
+.env
+
+# phpunit
+.phpunit*
+
+# temporary files
+tmp
