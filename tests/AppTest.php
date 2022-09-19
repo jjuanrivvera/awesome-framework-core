@@ -28,11 +28,4 @@ class AppTest extends TestCase
             $this->app->getContainer()
         );
     }
-
-    
-    public function testAppHasRouter(): void
-    {
-        $this->app->addRouter(\Awesome\Router::class);
-        $this->assertInstanceOf(\Awesome\Router::class, $this->app->getRouter());
-    }
 }
