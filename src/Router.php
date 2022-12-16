@@ -235,11 +235,15 @@ class Router
         }
 
         if ($route->hasCallable()) {
+            // get callback args
             $args = (new \ReflectionFunction($route->getCallback()))->getParameters();
+            // resolve dependencies
             $args = resolveMethodDependencies($args, self::$request);
+
             return call_user_func_array($route->getCallback(), $args);
         }
 
+        // extract controller and action from route
         list('controller' => $controller, 'action' => $action) = $route->getParams();
         $controller = self::getNamespace() . $controller;
 
@@ -248,6 +252,8 @@ class Router
         }
 
         $controller_instance = container($controller);
+
+        // add a suffix to the action name in order to execute the _call magic method
         $action = $action . Controller::FUNCTIONS_SUFFIX;
 
         return $controller_instance->$action();
