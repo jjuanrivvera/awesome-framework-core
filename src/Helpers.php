@@ -90,7 +90,7 @@ function resolveMethodDependencies($params, Request $request)
     $dependencies = [];
 
     foreach ($params as $param) {
-        $dependency = $param->getClass();
+        $dependency = $param->getType();
 
         if ($dependency === null) {
             $params = $request->getRouteParams();
@@ -100,7 +100,7 @@ function resolveMethodDependencies($params, Request $request)
                 $dependencies[] = $param->getDefaultValue() ?? null;
             }
         } else {
-            $dependencies[] = container($dependency->name);
+            $dependencies[] = container($dependency->getName());
         }
     }
 
