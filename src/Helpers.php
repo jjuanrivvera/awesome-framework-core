@@ -92,15 +92,17 @@ function resolveMethodDependencies($params, Request $request)
     foreach ($params as $param) {
         $dependency = $param->getType();
 
-        if ($dependency === null) {
-            $params = $request->getRouteParams();
-            if (isset($params[$param->name])) {
-                $dependencies[] = $params[$param->name];
-            } else {
-                $dependencies[] = $param->getDefaultValue() ?? null;
-            }
-        } else {
+        if ($dependency !== null) {
             $dependencies[] = container($dependency->getName());
+            continue;
+        }
+        
+        $params = $request->getRouteParams();
+
+        if (isset($params[$param->name])) {
+            $dependencies[] = $params[$param->name];
+        } else {
+            $dependencies[] = $param->getDefaultValue() ?? null;
         }
     }
 
