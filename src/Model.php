@@ -222,17 +222,11 @@ abstract class Model
             $valueType = gettype($value);
             $dataType = PDO::PARAM_STR;
 
-            switch ($valueType) {
-                case 'integer':
-                    $dataType = PDO::PARAM_INT;
-                    break;
-                case 'boolean':
-                    $dataType = PDO::PARAM_BOOL;
-                    break;
-                case 'NULL':
-                    $dataType = PDO::PARAM_NULL;
-                    break;
-            }
+            $dataType = match ($valueType) {
+                'integer' => PDO::PARAM_INT,
+                'boolean' => PDO::PARAM_BOOL,
+                'NULL' => PDO::PARAM_NULL,
+            };
 
             $statement->bindValue(":{$key}", $value, $dataType);
         }
