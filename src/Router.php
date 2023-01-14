@@ -66,7 +66,13 @@ class Router
             ];
         }
 
-        $route = new Route(compact('path', 'method', 'callback', 'regexPath', 'params'));
+        $route = new Route(
+            path: $path,
+            method: $method,
+            callback: $callback,
+            regexPath: $regexPath,
+            params: $params
+        );
         
         self::$routes[] = $route;
     }

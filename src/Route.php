@@ -8,54 +8,24 @@ namespace Awesome;
  */
 class Route
 {
-    /**
-     * Route path
-     * @var string
-     */
-    protected $path;
-
-    /**
-     * Regex path
-     * @var string
-     */
-    protected $regexPath;
-
-    /**
-     * Route method
-     * @var string
-     */
-    protected $method;
-
-    /**
-     * Route callback
-     * @var callable
-     */
-    protected $callback;
-
-    /**
-     * Route params
-     * @var array
-     */
-    protected $params;
 
     /**
      * Route constructor
      * @param mixed $args
      * @throws \Throwable
      */
-    public function __construct($args)
-    {
-        extract($args);
-
-        try {
-            $this->path = $path;
-            $this->method = $method;
-            $this->callback = $callback;
-            $this->regexPath = $regexPath;
-            $this->params = $params;
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+    public function __construct(
+        protected string $path,
+        protected string $method,
+        protected $callback,
+        protected string $regexPath = '',
+        protected array $params = []
+    ) {
+        $this->path = $path;
+        $this->method = $method;
+        $this->callback = $callback;
+        $this->regexPath = $regexPath;
+        $this->params = $params;
     }
 
     /**
