@@ -480,6 +480,6 @@ class Validator
     {
         $message = $this->messages[$field][$rule] ?? $this->messages[$rule] ?? $this->defaultMessages[$rule];
 
-        return str_replace([':attribute', ":${rule}"], [$field, $param], $message);
+        return str_replace([':attribute', ":$rule"], [$field, $param], $message);
     }
 }

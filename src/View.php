@@ -15,11 +15,6 @@ use Twig\Loader\FilesystemLoader;
 class View
 {
     /**
-     * Default views path
-     */
-    private const DEFAULT_VIEWS_PATH = '../App/Views';
-
-    /**
      * View template
      * @var string
      */
@@ -48,7 +43,7 @@ class View
         static $twig = null;
         
         if ($twig === null) {
-            $loader = new FilesystemLoader(self::DEFAULT_VIEWS_PATH);
+            $loader = new FilesystemLoader(App::getViewPath());
             $twig = new Environment($loader);
         }
         
@@ -91,6 +86,6 @@ class View
      */
     public static function exists($template)
     {
-        return file_exists(self::DEFAULT_VIEWS_PATH . "/$template");
+        return file_exists(App::getViewPath() . "/$template");
     }
 }

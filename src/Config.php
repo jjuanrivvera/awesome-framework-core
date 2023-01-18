@@ -38,13 +38,12 @@ class Config
 
     /**
      * Config constructor.
-     * @param string $configPath
      */
-    public function __construct($configPath = '/../config/*.php')
+    public function __construct()
     {
         $configParams = [];
 
-        foreach (glob($_SERVER['DOCUMENT_ROOT'] . $configPath) as $filename) {
+        foreach (glob(App::getConfigPath()) as $filename) {
             $file = pathinfo($filename, PATHINFO_FILENAME);
             $configParams[$file] = require $filename;
         }

@@ -40,7 +40,7 @@ abstract class Controller
      * with an "Action" suffix, e.g. indexAction, showAction etc.
      * @param string $name Method name
      * @param array $args Arguments passed to the method
-     * @return void
+     * @return mixed
      * @throws \Exception
      */
     public function __call($name, $args)
@@ -56,7 +56,7 @@ abstract class Controller
         if (method_exists($this, $method)) {
             if ($this->before() !== false) {
                 $response = call_user_func_array([$this, $method], $args);
-                $this->after($response);
+                return $this->after($response);
             }
         } else {
             throw new \Exception("Method $method not found in controller " . get_class($this));
@@ -74,7 +74,7 @@ abstract class Controller
     /**
      * After filter - called after an action method.
      * @param Response|View|string|null $response Response object
-     * @return void
+     * @return mixed
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      * @throws \Twig\Error\LoaderError
@@ -83,12 +83,19 @@ abstract class Controller
      */
     protected function after($response)
     {
+        $finalResponse = new Response($response);
+
         if ($response instanceof Response) {
-            echo $response;
+            $finalResponse = $response;
         } elseif ($response instanceof View) {
-            echo $response->render();
-        } else {
-            echo new Response($response);
+            $finalResponse = $response->render();
         }
+
+        if (!App::isCli()) {
+            echo $finalResponse;
+            return;
+        }
+
+        return $finalResponse;
     }
 }

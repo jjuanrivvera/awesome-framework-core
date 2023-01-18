@@ -21,6 +21,12 @@ class Request
     protected $path;
 
     /**
+     * Uri
+     * @var string
+     */
+    protected $uri;
+
+    /**
      * Request method
      * @var string
      */
@@ -46,6 +52,7 @@ class Request
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->headers = $this->extractHeaders();
         $this->body = file_get_contents('php://input');
+        $this->uri = $_SERVER['REQUEST_URI'];
     }
 
     /**
@@ -160,6 +167,25 @@ class Request
     public function getBody()
     {
         return $this->body;
+    }
+
+    /**
+     * Get uri
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
+
+    /**
+     * Set uri
+     * @param string $uri
+     * @return void
+     */
+    public function setUri($uri)
+    {
+        $this->uri = $uri;
     }
 
     /**

@@ -28,16 +28,6 @@ class Router
     protected static $request;
 
     /**
-     * Router constructor
-     * @param Request $request Parameters from the route
-     * @return void
-     */
-    public function __construct(Request $request)
-    {
-        self::$request = $request;
-    }
-
-    /**
      * Add a route to the routing table
      * @param string $path The route URL
      * @param string|callable $action The route callback action
@@ -191,11 +181,11 @@ class Router
      * @param string $url The route URL
      * @return Route|bool The route object
      */
-    public static function match($url)
+    public static function match($url, $request)
     {
         foreach (self::$routes as $route) {
             $match = preg_match($route->getRegexPath(), $url, $matches);
-            $method  = self::$request->getMethod();
+            $method  = $request->getMethod();
 
             if ($match && $method == $route->getMethod()) {
                 // Get named capture group values
@@ -207,7 +197,7 @@ class Router
                     }
                 }
 
-                self::$request->setRouteParams($params);
+                $request->setRouteParams($params);
 
                 return $route;
             }
@@ -227,14 +217,20 @@ class Router
 
     /**
      * Dispatch the route, creating the controller object and running the action method
-     * @param string $url The route URL
      * @return mixed
      * @throws \Exception
      */
-    public static function dispatch($url)
+    public static function dispatch(Request $request = null)
     {
-        $url = self::removeQueryStringVariables($url);
-        $route = self::match($url);
+        $request = $request ?? container()->get('Awesome\Request');
+        $uri = $request->getUri();
+
+        if (str_starts_with($uri, '/')) {
+            $uri = substr($uri, 1);
+        }
+
+        $url = self::removeQueryStringVariables($uri);
+        $route = self::match($url, $request);
         
         if (!$route) {
             throw new \Exception('Page not found', 404);
@@ -244,7 +240,7 @@ class Router
             // get callback args
             $args = (new \ReflectionFunction($route->getCallback()))->getParameters();
             // resolve dependencies
-            $args = resolveMethodDependencies($args, self::$request);
+            $args = resolveMethodDependencies($args, $request);
 
             return call_user_func_array($route->getCallback(), $args);
         }

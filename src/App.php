@@ -30,10 +30,49 @@ class App
     protected static $router;
 
     /**
+     * @var bool
+     */
+    protected static $isCli;
+
+    /**
+     * @var string
+     */
+    protected static $configPath;
+
+    /**
+     * @var string
+     */
+    protected static $routesPath;
+
+    /**
+     * @var string
+     */
+    protected static $viewPath;
+
+    /**
      * App Constructor
      * @throws Exception
      */
-    public function __construct()
+    public function __construct(
+        string $configPath = null,
+        string $routesPath = null,
+        string $viewPath = null,
+        bool $isCli = false
+    ) {
+        self::$isCli = $isCli ?? false;
+        self::$configPath = $configPath ?? dirname(__DIR__) . '/config/*.php';
+        self::$routesPath = $routesPath ?? dirname(__DIR__) . '/routes/*.php';
+        self::$viewPath = $viewPath ?? '../App/Views';
+        
+        $this->initializeContainer();
+    }
+
+    /**
+     * Initialize container
+     * @return void
+     * @throws Exception
+     */
+    public function initializeContainer()
     {
         $container = new Container();
 
@@ -80,15 +119,45 @@ class App
     }
 
     /**
+     * Know if the application is running in cli
+     * @return bool
+     */
+    public static function isCli(): bool
+    {
+        return self::$isCli;
+    }
+
+    /**
+     * Get config path
+     */
+    public static function getConfigPath(): string
+    {
+        return self::$configPath;
+    }
+
+    /**
+     * Get route path
+     */
+    public static function getRoutesPath(): string
+    {
+        return self::$routesPath;
+    }
+
+    /**
+     * Get view path
+     */
+    public static function getViewPath(): string
+    {
+        return self::$viewPath;
+    }
+
+    /**
      * Load routes
-     * @param string $routePath
      * @return void
      */
-    public static function loadRoutes($routePath = null): void
+    public static function loadRoutes(): void
     {
-        $routePath = $routePath ?: dirname($_SERVER['DOCUMENT_ROOT']) . '/routes/web.php';
-
-        $files = glob($routePath);
+        $files = glob(self::$routesPath);
 
         foreach ($files as $file) {
             require $file;
@@ -113,10 +182,9 @@ class App
      * @throws \DI\NotFoundException
      * @throws Exception
      */
-    public static function initializeRouter(): void
+    public static function loadRouter()
     {
         self::$router = self::$router ?: self::$container->get(Router::class);
-        self::$router->dispatch(str_replace('url=', '', $_SERVER['QUERY_STRING']));
     }
 
     /**
@@ -157,15 +225,26 @@ class App
     }
 
     /**
-     * Runs the application
+     * Init application
      * @return void
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    public function run(): void
+    public function init()
     {
         self::loadErrorAndExceptionHandler();
         self::loadRoutes();
-        self::initializeRouter();
+        self::loadRouter();
+    }
+
+    /**
+     * Run application
+     * @return mixed
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
+     */
+    public function run(Request $request = null)
+    {
+        return self::$router->dispatch($request);
     }
 }
