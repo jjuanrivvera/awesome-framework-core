@@ -14,9 +14,9 @@ class Database
 {
     /**
      * Connection
-     * @var PDO
+     * @var PDO|null
      */
-    public $connection;
+    public $connection = null;
 
     /**
      * @var Config
@@ -35,6 +35,7 @@ class Database
     /**
      * Connect to the database
      * @throws \Exception
+     * @return void
      */
     public function connect()
     {
@@ -51,6 +52,7 @@ class Database
 
     /**
      * Begin transaction
+     * @return void
      */
     public function beginTransaction()
     {
@@ -59,6 +61,7 @@ class Database
 
     /**
      * Commit transaction
+     * @return void
      */
     public function commit()
     {
@@ -67,6 +70,7 @@ class Database
 
     /**
      * Rollback transaction
+     * @return void
      */
     public function rollback()
     {
@@ -75,6 +79,7 @@ class Database
 
     /**
      * Get last insert id
+     * @return string|false
      */
     public function lastInsertId()
     {

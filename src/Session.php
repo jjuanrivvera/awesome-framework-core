@@ -5,54 +5,60 @@ namespace Awesome;
 class Session
 {
     /**
+     * Session status
+     * @var bool
+     */
+    protected bool $status = false;
+
+    /**
      * Starts new or resumes existing session
-     * @access  public
-     * @return  bool
+     * @return bool
      */
     public function start()
     {
-        if (session_start()) {
+        if ($this->status == true) {
             return true;
         }
 
-        return false;
+        $this->status = session_start();
+
+        return $this->status;
     }
 
     /**
      * End existing session, destroy, unset and delete session cookie
-     * @access  public
-     * @return  void
+     * @return void
      */
     public function end()
     {
-        if ($this->status != true) {
-            $this->start();
+        if ($this->status == false) {
+            return;
         }
 
-        session_destroy();
         session_unset();
-        setcookie(session_name(), null, 0, "/");
+        session_destroy();
+        setcookie(session_name(), '', time() - 3600);
+
+        $this->status = false;
     }
 
     /**
      * Set new session item
-     * @access  public
-     * @param   mixed
-     * @param   mixed
-     * @return  mixed
+     * @param string $key
+     * @param mixed $value
+     * @return mixed
      */
-    public function set($key, $value)
+    public function set(string $key, $value)
     {
         return $_SESSION[$key] = $value;
     }
 
     /**
      * Checks if session key is already set
-     * @access  public
-     * @param   mixed  - session key
-     * @return  bool
+     * @param string $key
+     * @return bool
      */
-    public function has($key)
+    public function has(string $key)
     {
         if (isset($_SESSION[$key])) {
             return true;
@@ -63,11 +69,10 @@ class Session
 
     /**
      * Get session item
-     * @access  public
-     * @param   mixed
-     * @return  mixed
+     * @param string $key
+     * @return mixed
      */
-    public function get($key)
+    public function get(string $key)
     {
         if (!isset($_SESSION[$key])) {
             return false;

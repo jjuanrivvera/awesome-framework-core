@@ -11,6 +11,7 @@ class Config
 {
     /**
      * Config params
+     * @var array<mixed>
      */
     protected $params;
 
@@ -23,7 +24,7 @@ class Config
     {
         $keys = explode('.', $key);
 
-        if (count($keys) === 0) {
+        if (count($keys) == 0) {
             return null;
         }
 

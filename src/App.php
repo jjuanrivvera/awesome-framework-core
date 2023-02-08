@@ -31,9 +31,9 @@ class App
     protected static $router;
 
     /**
-     * @var bool
+     * @var bool|null
      */
-    protected static $isCli;
+    protected static $isCli = null;
 
     /**
      * @var string
@@ -55,16 +55,16 @@ class App
      * @param string|null $configPath
      * @param string|null $routesPath
      * @param string|null $viewPath
-     * @param bool|null $isCli
+     * @param bool $isCli
      * @throws Exception
      */
     public function __construct(
         string $configPath = null,
         string $routesPath = null,
         string $viewPath = null,
-        bool $isCli = false
+        bool $isCli = null
     ) {
-        self::$isCli = $isCli ?? php_sapi_name() === 'cli';
+        self::$isCli = is_null($isCli) ?? php_sapi_name() === 'cli';
         self::$configPath = $configPath ?? dirname(__DIR__) . '/config/*.php';
         self::$routesPath = $routesPath ?? dirname(__DIR__) . '/routes/*.php';
         self::$viewPath = $viewPath ?? '../App/Views';
@@ -113,7 +113,7 @@ class App
 
     /**
      * Add router instance
-     * @param $class
+     * @param string $class
      * @return void
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
@@ -194,7 +194,7 @@ class App
 
     /**
      * Load repositories
-     * @param null $contractsPath
+     * @param string $contractsPath
      * @param string $contractsNamespace
      * @param string $repositoriesNamespace Namespace of repositories
      * @param string $contractsSuffix

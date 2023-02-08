@@ -27,19 +27,20 @@ abstract class Model
      * Model constructor.
      * @param Database $db
      * @throws \Exception
+     * @return void
      */
     public function __construct(Database $db)
     {
         $this->db = $db;
 
-        if (!$this->db->connection) {
+        if (is_null($this->db->connection)) {
             $this->db->connect();
         }
     }
 
     /**
      * Get all records from the database
-     * @return array
+     * @return array<mixed>|false
      */
     public function all()
     {
@@ -52,10 +53,10 @@ abstract class Model
 
     /**
      * Get a record from the database by id
-     * @param  int $id
-     * @return array
+     * @param int $id
+     * @return mixed
      */
-    public function find($id)
+    public function find(int $id)
     {
         $query = "SELECT * FROM {$this->table} WHERE id = :id";
         $statement = $this->db->connection->prepare($query);
@@ -66,13 +67,13 @@ abstract class Model
 
     /**
      * Get a record from the database by id
-     * @param $field
-     * @param $value
-     * @return array
+     * @param string $field
+     * @param int|string $value
+     * @return mixed
      */
-    public function findWhere($field, $value)
+    public function findWhere(string $field, $value)
     {
-        $query = "SELECT * FROM {$this->table} WHERE {$field} = :value";
+        $query = "SELECT * FROM {$this->table} WHERE '{$field}' = :value";
         $statement = $this->db->connection->prepare($query);
         $statement->bindParam(':value', $value);
         $statement->execute();
@@ -81,13 +82,13 @@ abstract class Model
 
     /**
      * Get all records from the database by field
-     * @param  string $field
-     * @param  string $value
-     * @return array
+     * @param string $field
+     * @param int|string $value
+     * @return array<mixed>|false
      */
-    public function allBy($field, $value)
+    public function allBy(string $field, $value)
     {
-        $query = "SELECT * FROM {$this->table} WHERE {$field} = :value";
+        $query = "SELECT * FROM {$this->table} WHERE '{$field}' = :value";
         $statement = $this->db->connection->prepare($query);
         $statement->bindParam(':value', $value);
         $statement->execute();
@@ -98,11 +99,11 @@ abstract class Model
     /**
      * Update a record in the database
      * @param int $id
-     * @param array $data
-     * @return array
+     * @param array<mixed> $data
+     * @return mixed
      * @throws \Throwable
      */
-    public function update($id, $data)
+    public function update(int $id, array $data)
     {
         if (!$this->find($id)) {
             throw new NotFoundException('Record not found');
@@ -131,11 +132,11 @@ abstract class Model
 
     /**
      * Create and return record in the database
-     * @param array $data
-     * @return array
+     * @param array<mixed> $data
+     * @return mixed
      * @throws \Throwable
      */
-    public function create($data)
+    public function create(array $data)
     {
         try {
             $this->db->beginTransaction();
@@ -155,7 +156,7 @@ abstract class Model
             $id = $this->db->lastInsertId();
             $this->db->commit();
 
-            return $this->find($id);
+            return $this->find((int) $id);
         } catch (\Throwable $th) {
             $this->db->rollBack();
             throw $th;
@@ -165,10 +166,10 @@ abstract class Model
     /**
      * Delete a record from the database
      * @param int $id
-     * @return boolean
+     * @return bool
      * @throws \Throwable
      */
-    public function delete($id)
+    public function delete(int $id)
     {
         try {
             $this->db->beginTransaction();
@@ -176,29 +177,28 @@ abstract class Model
 
             $statement = $this->db->connection->prepare($query);
             $statement->bindParam(':id', $id);
-            $statement->execute();
+            $result = $statement->execute();
             $this->db->commit();
-            return true;
         } catch (\Throwable $th) {
             $this->db->rollBack();
             throw $th;
         }
 
-        return false;
+        return $result;
     }
 
     /**
      * Delete a record from the database by field
      * @param string $field
-     * @param string $value
+     * @param int|string $value
      * @return void
      * @throws \Throwable
      */
-    public function deleteWhere($field, $value)
+    public function deleteWhere(string $field, $value)
     {
         try {
             $this->db->beginTransaction();
-            $query = "DELETE FROM {$this->table} WHERE {$field} = :value";
+            $query = "DELETE FROM {$this->table} WHERE '{$field}' = :value";
             $statement = $this->db->connection->prepare($query);
             $statement->bindParam(':value', $value);
             $statement->execute();
@@ -212,10 +212,10 @@ abstract class Model
     /**
      * Set statement bindings
      * @param mixed $statement
-     * @param array $data
+     * @param array<mixed> $data
      * @return mixed
      */
-    private function setStatementBindings($statement, $data)
+    private function setStatementBindings($statement, array $data)
     {
         foreach ($data as $key => $value) {
             $valueType = gettype($value);
@@ -223,8 +223,9 @@ abstract class Model
 
             $dataType = match ($valueType) {
                 'integer' => PDO::PARAM_INT,
-                'boolean' => PDO::PARAM_BOOL,
+                'bool' => PDO::PARAM_BOOL,
                 'NULL' => PDO::PARAM_NULL,
+                'string' => PDO::PARAM_STR
             };
 
             $statement->bindValue(":{$key}", $value, $dataType);

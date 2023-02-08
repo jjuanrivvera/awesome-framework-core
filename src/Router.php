@@ -20,7 +20,7 @@ class Router
 
     /**
      * Parameters from the matched route
-     * @var array
+     * @var array<mixed>
      */
     protected static $params = [];
 
@@ -72,7 +72,7 @@ class Router
 
     /**
      * Build Regex Path
-     * @param string path
+     * @param string $path
      * @return string|string[]|null
      */
     public static function buildRegexPath($path)
@@ -100,7 +100,7 @@ class Router
     /**
      * Add a get route to the routing table
      * @param string $route The route URL
-     * @param array $params Parameters (controller, action, etc.)
+     * @param array<mixed> $params Parameters (controller, action, etc.)
      * @return void
      * @throws \Throwable
      */
@@ -112,7 +112,7 @@ class Router
     /**
      * Add a post route to the routing table
      * @param string $route The route URL
-     * @param array $params Parameters (controller, action, etc.)
+     * @param array<mixed> $params Parameters (controller, action, etc.)
      * @return void
      * @throws \Throwable
      */
@@ -124,7 +124,7 @@ class Router
     /**
      * Add a put route to the routing table
      * @param string $route The route URL
-     * @param array $params Parameters (controller, action, etc.)
+     * @param array<mixed> $params Parameters (controller, action, etc.)
      * @return void
      * @throws \Throwable
      */
@@ -136,7 +136,7 @@ class Router
     /**
      * Add a delete route to the routing table
      * @param string $route The route URL
-     * @param array $params Parameters (controller, action, etc.)
+     * @param array<mixed> $params Parameters (controller, action, etc.)
      * @return void
      * @throws \Throwable
      */
@@ -148,7 +148,7 @@ class Router
     /**
      * Add a patch route to the routing table
      * @param string $route The route URL
-     * @param array $params Parameters (controller, action, etc.)
+     * @param array<mixed> $params Parameters (controller, action, etc.)
      * @return void
      * @throws \Throwable
      */
@@ -160,7 +160,7 @@ class Router
     /**
      * Add a options route to the routing table
      * @param string $route The route URL
-     * @param array $params Parameters (controller, action, etc.)
+     * @param array<mixed> $params Parameters (controller, action, etc.)
      * @return void
      * @throws \Throwable
      */
@@ -171,7 +171,7 @@ class Router
 
     /**
      * Get all the routes from the routing table
-     * @return array
+     * @return array<Route>
      */
     public static function getRoutes()
     {
@@ -182,9 +182,10 @@ class Router
      * Match the route to the routes in the routing table, setting the params
      * property if a route is found.
      * @param string $url The route URL
+     * @param Request $request The request object
      * @return Route|bool The route object
      */
-    public static function match($url, $request)
+    public static function match(string $url, Request $request)
     {
         foreach (self::$routes as $route) {
             $match = preg_match($route->getRegexPath(), $url, $matches);
@@ -211,7 +212,7 @@ class Router
 
     /**
      * Get the currently matched parameters
-     * @return array
+     * @return array<mixed>
      */
     public static function getParams()
     {

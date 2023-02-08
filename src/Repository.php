@@ -14,7 +14,7 @@ abstract class Repository implements Contract
 
     /**
      * Get all records from the database
-     * @return array
+     * @return array<mixed>|false
      */
     public function all()
     {
@@ -23,8 +23,8 @@ abstract class Repository implements Contract
 
     /**
      * Get a record from the database by id
-     * @param  int $id
-     * @return array
+     * @param int $id
+     * @return mixed
      */
     public function find(int $id)
     {
@@ -32,32 +32,32 @@ abstract class Repository implements Contract
     }
 
     /**
-     * Get a record from the database by id
+     * Get records with condition
      * @param string $field
-     * @param string $value
-     * @return array
+     * @param int|string $value
+     * @return mixed
      */
-    public function findWhere(string $field, string $value)
+    public function findWhere(string $field, $value)
     {
         return $this->model->findWhere($field, $value);
     }
 
     /**
      * Get all records from the database by field
-     * @param  string $field
-     * @param  string $value
-     * @return array
+     * @param string $field
+     * @param int|string $value
+     * @return array<mixed>|false
      */
-    public function allBy($field, $value)
+    public function allBy(string $field, $value)
     {
         return $this->model->allBy($field, $value);
     }
 
-     /**
+    /**
      * Update a record in the database
-     * @param  int $id
-     * @param  array $data
-     * @return void
+     * @param int $id
+     * @param array<mixed> $data
+     * @return mixed
      */
     public function update($id, array $data)
     {
@@ -66,8 +66,8 @@ abstract class Repository implements Contract
 
     /**
      * Create a record in the database
-     * @param  array $data
-     * @return void
+     * @param array<mixed> $data
+     * @return mixed
      */
     public function create(array $data)
     {
@@ -76,8 +76,8 @@ abstract class Repository implements Contract
 
     /**
      * Delete a record from the database
-     * @param  int $id
-     * @return boolean
+     * @param int $id
+     * @return bool
      */
     public function delete(int $id)
     {
@@ -86,11 +86,11 @@ abstract class Repository implements Contract
 
     /**
      * Delete a record from the database
-     * @param  string $field
-     * @param  string $value
-     * @return boolean
+     * @param string $field
+     * @param int|string $value
+     * @return bool
      */
-    public function deleteWhere(string $field, string $value)
+    public function deleteWhere(string $field, $value)
     {
         return $this->model->deleteWhere($field, $value);
     }
