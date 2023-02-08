@@ -3,6 +3,7 @@
 namespace Awesome;
 
 use PDO;
+use Awesome\Exceptions\DatabaseConnectionException;
 
 /**
  * Class Database
@@ -44,7 +45,7 @@ class Database
                 $this->config->get('database.password')
             );
         } catch (\PDOException $e) {
-            throw new \Exception($e->getMessage(), (int) $e->getCode());
+            throw new DatabaseConnectionException($e->getMessage(), (int) $e->getCode());
         }
     }
 

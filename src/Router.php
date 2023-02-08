@@ -2,6 +2,9 @@
 
 namespace Awesome;
 
+use Awesome\Exceptions\NotFoundException;
+use Awesome\Exceptions\ControllerNotFoundException;
+
 /**
  * Router
  * @package Awesome
@@ -63,7 +66,7 @@ class Router
             regexPath: $regexPath,
             params: $params
         );
-        
+
         self::$routes[] = $route;
     }
 
@@ -190,7 +193,7 @@ class Router
             if ($match && $method == $route->getMethod()) {
                 // Get named capture group values
                 $params = [];
-                
+
                 foreach ($matches as $key => $match) {
                     if (is_string($key)) {
                         $params[$key] = $match;
@@ -231,16 +234,16 @@ class Router
 
         $url = self::removeQueryStringVariables($uri);
         $route = self::match($url, $request);
-        
+
         if (!$route) {
-            throw new \Exception('Page not found', 404);
+            throw new NotFoundException('Page not found', 404);
         }
 
         if ($route->hasCallable()) {
             // get callback args
             $args = (new \ReflectionFunction($route->getCallback()))->getParameters();
             // resolve dependencies
-            $args = resolveMethodDependencies($args, $request);
+            $args = resolve_method_dependencies($args, $request);
 
             return call_user_func_array($route->getCallback(), $args);
         }
@@ -250,7 +253,7 @@ class Router
         $controller = self::getNamespace() . $controller;
 
         if (!class_exists($controller)) {
-            throw new \Exception("Controller class $controller not found");
+            throw new ControllerNotFoundException($controller);
         }
 
         $controller_instance = container($controller);
@@ -287,14 +290,14 @@ class Router
     {
         if ($url != '') {
             $parts = explode('&', $url, 2);
-            
+
             if (strpos($parts[0], '=') === false) {
                 $url = $parts[0];
             } else {
                 $url = '';
             }
         }
-        
+
         return $url;
     }
 

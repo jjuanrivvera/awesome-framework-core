@@ -38,6 +38,7 @@ class Config
 
     /**
      * Config constructor.
+     * @return void
      */
     public function __construct()
     {

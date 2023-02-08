@@ -4,6 +4,7 @@ namespace Awesome;
 
 use Awesome\View;
 use Awesome\Response;
+use Awesome\Exceptions\MethodNotFoundException;
 
 /**
  * Base controller
@@ -51,7 +52,7 @@ abstract class Controller
 
         $params = $reflection->getParameters();
 
-        $args = resolveMethodDependencies($params, $this->request);
+        $args = resolve_method_dependencies($params, $this->request);
 
         if (method_exists($this, $method)) {
             if ($this->before() !== false) {
@@ -59,7 +60,7 @@ abstract class Controller
                 return $this->after($response);
             }
         } else {
-            throw new \Exception("Method $method not found in controller " . get_class($this));
+            throw new MethodNotFoundException("Method $method not found in controller " . get_class($this));
         }
     }
 
@@ -83,10 +84,14 @@ abstract class Controller
      */
     protected function after($response)
     {
-        $finalResponse = new Response($response);
+        $finalResponse = '';
 
         if ($response instanceof Response) {
-            $finalResponse = $response;
+            if ($this->request->wantsJson()) {
+                $response->setHeader('Content-Type', 'application/json');
+            }
+
+            $finalResponse = $response->send();
         } elseif ($response instanceof View) {
             $finalResponse = $response->render();
         }

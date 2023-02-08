@@ -60,7 +60,7 @@ function config($key = null)
     if (is_null($key)) {
         return $config;
     }
-    
+
     return $config->get($key);
 }
 
@@ -85,7 +85,7 @@ function str_replace_first($search, $replace, $subject)
  * @throws \DI\NotFoundException
  * @throws ReflectionException
  */
-function resolveMethodDependencies($params, Request $request)
+function resolve_method_dependencies($params, Request $request)
 {
     $dependencies = [];
 
@@ -96,7 +96,7 @@ function resolveMethodDependencies($params, Request $request)
             $dependencies[] = container($dependency->getName());
             continue;
         }
-        
+
         $params = $request->getRouteParams();
 
         if (isset($params[$param->name])) {
