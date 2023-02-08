@@ -10,13 +10,13 @@ class Route
 {
     /**
      * Route constructor
-     * @param mixed $args
      * @throws \Throwable
+     * @return void
      */
     public function __construct(
         protected string $path,
         protected string $method,
-        protected $callback,
+        protected mixed $callback,
         protected string $regexPath = '',
         protected array $params = []
     ) {
@@ -75,7 +75,7 @@ class Route
 
     /**
      * Get route params
-     * @return array
+     * @return array<mixed>
      */
     public function getParams()
     {
@@ -84,7 +84,7 @@ class Route
 
     /**
      * Set route params
-     * @param array $params
+     * @param array<mixed> $params
      * @return void
      */
     public function setParams(array $params)
@@ -103,7 +103,7 @@ class Route
 
     /**
      * Call route callback
-     * @param array $args
+     * @param array<mixed> $args
      * @return mixed
      */
     public function call($args)

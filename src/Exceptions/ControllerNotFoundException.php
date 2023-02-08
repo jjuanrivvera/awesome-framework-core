@@ -2,7 +2,9 @@
 
 namespace Awesome\Exceptions;
 
-class ControllerNotFoundException extends \Exception
+use Exception;
+
+class ControllerNotFoundException extends Exception
 {
     /**
      * Conditionally log the exception
@@ -15,7 +17,7 @@ class ControllerNotFoundException extends \Exception
      * @param string $controller
      * @param Exception|null $previous
      */
-    public function __construct($controller, \Exception $previous = null)
+    public function __construct($controller, Exception $previous = null)
     {
         parent::__construct("Controller class $controller not found", 500, $previous);
     }

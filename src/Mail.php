@@ -25,10 +25,10 @@ class Mail
 
     /**
      * Send email
-     * @param string|array $to
+     * @param string|array<string> $to
      * @param string $subject
      * @param string $body
-     * @param array $attachments
+     * @param array<mixed> $attachments
      * @return void
      * @throws \Exception
      */

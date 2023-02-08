@@ -7,27 +7,30 @@ use PDO;
 class Validator
 {
     /**
-     * @var array
+     * Validation errors
+     * @var array<mixed>
      */
     protected $errors = [];
 
     /**
-     * @var array
+     * Validation rules
+     * @var array<mixed>
      */
     protected $rules = [];
 
     /**
-     * @var array
+     * Data to validate
+     * @var array<mixed>
      */
     protected $data = [];
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $messages = [];
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $defaultMessages = [
         'required' => 'The :attribute field is required.',
@@ -66,9 +69,9 @@ class Validator
 
     /**
      * Validator constructor
-     * @param array $data
-     * @param array $rules
-     * @param array $messages
+     * @param array<mixed> $data
+     * @param array<mixed> $rules
+     * @param array<mixed> $messages
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      * @throws \Exception
@@ -113,7 +116,7 @@ class Validator
 
     /**
      * Get errors
-     * @return array
+     * @return array<mixed>
      */
     public function getErrors(): array
     {
@@ -309,7 +312,7 @@ class Validator
     /**
      * Validate in
      * @param string $field
-     * @param array $values
+     * @param array<mixed> $values
      * @return void
      */
     protected function validateIn(string $field, array $values): void
@@ -322,7 +325,7 @@ class Validator
     /**
      * Validate not in
      * @param string $field
-     * @param array $values
+     * @param array<mixed> $values
      * @return void
      */
     protected function validateNotIn(string $field, array $values): void
@@ -473,10 +476,10 @@ class Validator
      * Get error message
      * @param string $field
      * @param string $rule
-     * @param string $param
+     * @param int|string $param
      * @return string
      */
-    protected function getMessage(string $field, string $rule, string $param = ''): string
+    protected function getMessage(string $field, string $rule, $param = ''): string
     {
         $message = $this->messages[$field][$rule] ?? $this->messages[$rule] ?? $this->defaultMessages[$rule];
 

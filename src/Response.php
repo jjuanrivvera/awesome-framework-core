@@ -2,7 +2,7 @@
 
 namespace Awesome;
 
-class Response
+final class Response
 {
     public const HTTP_CONTINUE = 100;
     public const HTTP_SWITCHING_PROTOCOLS = 101;
@@ -69,7 +69,7 @@ class Response
     public const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;
 
     /**
-     * @var string
+     * @var mixed
      */
     protected $content;
 
@@ -79,7 +79,7 @@ class Response
     protected $statusCode;
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $headers = [];
 
@@ -99,7 +99,7 @@ class Response
     protected $statusText = '';
 
     /**
-     * @var array
+     * @var array<mixed>
      */
     protected $statusTexts = [
         100 => 'Continue',
@@ -165,19 +165,23 @@ class Response
 
     /**
      * Request
+     * @var Request
      */
     protected $request;
 
     /**
      * Constructor
-     * @param string $content The response content
+     * @param mixed $content The response content
      * @param int $statusCode The response status code
-     * @param array $headers The response headers
+     * @param array<mixed> $headers The response headers
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    public function __construct($content = '', int $statusCode = 200, array $headers = [])
-    {
+    public function __construct(
+        $content = '',
+        int $statusCode = 200,
+        array $headers = []
+    ) {
         $this->setContent($content);
         $this->statusCode = $statusCode;
         $this->headers = $headers;
@@ -188,7 +192,7 @@ class Response
      * Create response
      * @param mixed $content The response content
      * @param int $statusCode The response status code
-     * @param array $headers The response headers
+     * @param array<mixed> $headers The response headers
      * @return Response
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
@@ -209,7 +213,7 @@ class Response
 
     /**
      * Set the response content
-     * @param string|array $content The response content
+     * @param string|array<mixed> $content The response content
      * @return Response The current response
      */
     public function setContent($content)
@@ -251,7 +255,7 @@ class Response
 
     /**
      * Get the response headers
-     * @return array The response headers
+     * @return array<mixed> The response headers
      */
     public function getHeaders()
     {
@@ -260,7 +264,7 @@ class Response
 
     /**
      * Set the response headers
-     * @param array $headers The response headers
+     * @param array<mixed> $headers The response headers
      * @return Response The current response
      */
     public function setHeaders(array $headers)
@@ -284,7 +288,7 @@ class Response
      * @param string $mimeType The response mime type
      * @return Response The current response
      */
-    public function setMimeType($mimeType)
+    public function setMimeType(string $mimeType)
     {
         $this->mimeType = $mimeType;
 
@@ -305,7 +309,7 @@ class Response
      * @param string $charset The response charset
      * @return Response The current response
      */
-    public function setCharset($charset)
+    public function setCharset(string $charset)
     {
         $this->charset = $charset;
 
@@ -326,7 +330,7 @@ class Response
      * @param string $statusText The response status text
      * @return Response The current response
      */
-    public function setStatusText($statusText)
+    public function setStatusText(string $statusText)
     {
         $this->statusText = $statusText;
 
@@ -335,7 +339,7 @@ class Response
 
     /**
      * Get the response status text
-     * @return array The response status text
+     * @return array<mixed> The response status text
      */
     public function getStatusTexts()
     {
@@ -344,7 +348,7 @@ class Response
 
     /**
      * Set the response status text
-     * @param array $statusTexts
+     * @param array<mixed> $statusTexts
      * @return Response The current response
      */
     public function setStatusTexts(array $statusTexts)
@@ -355,21 +359,21 @@ class Response
 
     /**
      * Get the response status text
-     * @param $statusCode
+     * @param int $statusCode
      * @return string The response status text
      */
-    public function getStatusTextByCode($statusCode)
+    public function getStatusTextByCode(int $statusCode)
     {
         return $this->statusTexts[$statusCode];
     }
 
     /**
      * Set the response status text
-     * @param $statusCode
+     * @param int $statusCode
      * @param string $statusText The response status text
      * @return Response The current response
      */
-    public function setStatusTextByCode($statusCode, $statusText)
+    public function setStatusTextByCode(int $statusCode, string $statusText)
     {
         $this->statusTexts[$statusCode] = $statusText;
         return $this;
@@ -377,21 +381,21 @@ class Response
 
     /**
      * Get the response headers
-     * @param $name
-     * @return array The response headers
+     * @param string $name
+     * @return array<mixed> The response headers
      */
-    public function getHeader($name)
+    public function getHeader(string $name)
     {
         return $this->headers[$name];
     }
 
     /**
      * Set the response headers
-     * @param $name
-     * @param $header
+     * @param string $name
+     * @param string $header
      * @return Response The current response
      */
-    public function setHeader($name, $header)
+    public function setHeader(string $name, string $header)
     {
         $this->headers[$name] = $header;
         return $this;
@@ -399,8 +403,8 @@ class Response
 
     /**
      * Get the response headers
-     * @param $name
-     * @return array The response headers
+     * @param string $name
+     * @return mixed The response headers
      */
     public function getHeaderByName($name)
     {
@@ -409,8 +413,8 @@ class Response
 
     /**
      * Set the response headers
-     * @param $name
-     * @param $header
+     * @param string $name
+     * @param string $header
      * @return Response The current response
      */
     public function setHeaderByName($name, $header)
@@ -486,6 +490,7 @@ class Response
 
     /**
      * Send the response with the current status code and content
+     * @return void
      */
     public function __invoke()
     {

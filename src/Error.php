@@ -13,6 +13,7 @@ class Error
 {
     /**
      * Error log folder
+     * @var string
      */
     private const ERROR_LOG_FOLDER = 'logs';
 
@@ -23,6 +24,7 @@ class Error
      * @param string $file Filename the error was raised in
      * @param int $line Line number in the file
      * @throws \ErrorException
+     * @return void
      */
     public static function errorHandler($level, $message, $file, $line)
     {
@@ -39,6 +41,7 @@ class Error
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
+     * @return void
      */
     public static function exceptionHandler($exception)
     {
@@ -71,6 +74,7 @@ class Error
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
+     * @return void
      */
     private static function renderException(\Exception $exception, int $code)
     {
@@ -126,6 +130,7 @@ class Error
     /**
      * Display error in debug mode
      * @param \Exception $exception
+     * @return void
      */
     public static function displayDebugError($exception): void
     {
@@ -139,6 +144,7 @@ class Error
     /**
      * Log the error
      * @param \Exception $exception
+     * @return void
      */
     public static function logError(\Exception $exception): void
     {

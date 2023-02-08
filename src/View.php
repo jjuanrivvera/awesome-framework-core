@@ -28,14 +28,14 @@ class View
 
     /**
      * Template variables
-     * @var array
+     * @var array<mixed>
      */
     protected static $data = [];
 
     /**
      * Render a view template using Twig
      * @param string $template The template file
-     * @param array $args Associative array of data to display in the view (optional)
+     * @param array<mixed> $args Associative array of data to display in the view (optional)
      * @return View
      */
     public static function make(string $template, array $args = [])
@@ -68,15 +68,20 @@ class View
 
     /**
      * Cast view class to string
+     * @return string
      */
     public function __toString()
     {
+        $return = '';
+
         try {
-            return self::render();
+            $return = self::render();
         } catch (LoaderError $e) {
         } catch (RuntimeError $e) {
         } catch (SyntaxError $e) {
         }
+
+        return $return;
     }
 
     /**

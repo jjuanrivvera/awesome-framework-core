@@ -10,7 +10,7 @@ class Request
 {
     /**
      * Route parameters
-     * @var array
+     * @var array<mixed>
      */
     protected $routeParams = [];
 
@@ -34,7 +34,7 @@ class Request
 
     /**
      * Request headers
-     * @var array
+     * @var array<mixed>
      */
     protected $headers;
 
@@ -46,6 +46,7 @@ class Request
 
     /**
      * Request constructor
+     * @return void
      */
     public function __construct()
     {
@@ -57,7 +58,7 @@ class Request
 
     /**
      * Get route params
-     * @return array
+     * @return array<mixed>
      */
     public function getRouteParams()
     {
@@ -67,7 +68,7 @@ class Request
 
     /**
      * Set route params
-     * @param array $routeParams
+     * @param array<mixed> $routeParams
      * @return void
      */
     public function setRouteParams(array $routeParams)
@@ -115,14 +116,14 @@ class Request
      * @param string $method
      * @return void
      */
-    private function setMethod($method)
+    private function setMethod(string $method)
     {
         $this->method = $method;
     }
 
     /**
      * Get headers
-     * @return array
+     * @return array<mixed>
      */
     public function getHeaders()
     {
@@ -131,7 +132,7 @@ class Request
 
     /**
      * Set headers
-     * @param array $headers
+     * @param array<mixed> $headers
      * @return void
      */
     private function setHeaders(array $headers)
@@ -141,7 +142,7 @@ class Request
 
     /**
      * Extract headers
-     * @return array
+     * @return array<mixed>
      */
     public function extractHeaders()
     {
@@ -183,7 +184,7 @@ class Request
      * @param string $uri
      * @return void
      */
-    public function setUri($uri)
+    public function setUri(string $uri)
     {
         $this->uri = $uri;
     }

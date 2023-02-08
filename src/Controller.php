@@ -40,7 +40,7 @@ abstract class Controller
      * filter methods on action methods. Action methods need to be named
      * with an "Action" suffix, e.g. indexAction, showAction etc.
      * @param string $name Method name
-     * @param array $args Arguments passed to the method
+     * @param array<mixed> $args Arguments passed to the method
      * @return mixed
      * @throws \Exception
      */
@@ -55,10 +55,9 @@ abstract class Controller
         $args = resolve_method_dependencies($params, $this->request);
 
         if (method_exists($this, $method)) {
-            if ($this->before() !== false) {
-                $response = call_user_func_array([$this, $method], $args);
-                return $this->after($response);
-            }
+            $this->before();
+            $response = call_user_func_array([$this, $method], $args);
+            return $this->after($response);
         } else {
             throw new MethodNotFoundException("Method $method not found in controller " . get_class($this));
         }

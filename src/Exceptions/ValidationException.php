@@ -2,7 +2,9 @@
 
 namespace Awesome\Exceptions;
 
-class ValidationException extends \Exception
+use Exception;
+
+class ValidationException extends Exception
 {
     /**
      * Conditionally log the exception
@@ -12,11 +14,11 @@ class ValidationException extends \Exception
 
     /**
      * ValidationException constructor.
-     * @param array $errors
+     * @param array<mixed> $errors
      * @param int $code
      * @param Exception|null $previous
      */
-    public function __construct($errors = [], $code = 422, \Exception $previous = null)
+    public function __construct($errors = [], $code = 422, Exception $previous = null)
     {
         parent::__construct(json_encode($errors), $code, $previous);
     }

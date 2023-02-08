@@ -5,8 +5,8 @@ use Awesome\Request;
 
 /**
  * Dummy function used to test
- * @param $a
- * @param $b
+ * @param int $a
+ * @param int $b
  * @return mixed
  */
 function add($a, $b)
@@ -32,7 +32,7 @@ function env($key, $default = null)
 /**
  * Get container instance
  * @param string|null $class Class to resolve
- * @param array $parameters Parameters to pass to the constructor
+ * @param array<mixed> $parameters Parameters to pass to the constructor
  * @return mixed|DI\Container
  * @throws \DI\DependencyException
  * @throws \DI\NotFoundException
@@ -80,7 +80,7 @@ function str_replace_first($search, $replace, $subject)
  * Resolve method dependencies
  * @param \ReflectionParameter[] $params
  * @param Request $request
- * @return array
+ * @return array<mixed>
  * @throws \DI\DependencyException
  * @throws \DI\NotFoundException
  * @throws ReflectionException

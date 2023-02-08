@@ -2,7 +2,7 @@
 
 namespace Awesome\Exceptions;
 
-class DatabaseConnectionException extends \Exception
+class DatabaseConnectionException extends BaseException
 {
     /**
      * Conditionally log the exception
@@ -11,13 +11,8 @@ class DatabaseConnectionException extends \Exception
     public $shouldLog = true;
 
     /**
-     * DatabaseConnectionException constructor.
-     * @param string $message
-     * @param int $code
-     * @param Exception|null $previous
+     * Default exception code
+     * @var int
      */
-    public function __construct($message, $code = 500, \Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
+    public $defaultCode = 500;
 }
