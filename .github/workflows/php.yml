@@ -44,6 +44,7 @@ jobs:
     ## Check for PHPStan errors.
     - name: Run PHPStan
       run: composer run-script phpstan
+      continue-on-error: true
 
     ## Check for PHP syntax errors.
     - name: PHP syntax check

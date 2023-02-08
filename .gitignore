@@ -13,3 +13,6 @@ vendor/
 
 # temporary files
 tmp
+
+# phpstan
+phpstan.neon
