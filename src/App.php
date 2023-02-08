@@ -20,6 +20,7 @@ class App
     private const DEFAULT_APP_ENVIRONMENT = 'production';
 
     /**
+     * Container instance
      * @var Container
      */
     protected static $container;
@@ -51,6 +52,10 @@ class App
 
     /**
      * App Constructor
+     * @param string|null $configPath
+     * @param string|null $routesPath
+     * @param string|null $viewPath
+     * @param bool|null $isCli
      * @throws Exception
      */
     public function __construct(
@@ -59,11 +64,11 @@ class App
         string $viewPath = null,
         bool $isCli = false
     ) {
-        self::$isCli = $isCli ?? false;
+        self::$isCli = $isCli ?? php_sapi_name() === 'cli';
         self::$configPath = $configPath ?? dirname(__DIR__) . '/config/*.php';
         self::$routesPath = $routesPath ?? dirname(__DIR__) . '/routes/*.php';
         self::$viewPath = $viewPath ?? '../App/Views';
-        
+
         $this->initializeContainer();
     }
 
@@ -214,7 +219,7 @@ class App
             $class = basename($file, '.php');
             $contract = $contractsNamespace . $class;
             $repository = $repositoriesNamespace . str_replace($contractsSuffix, $repositoriesSuffix, $class);
-            
+
             try {
                 $repositoryClass = self::$container->get($repository);
                 self::$container->set($contract, $repositoryClass);
