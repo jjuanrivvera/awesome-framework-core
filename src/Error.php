@@ -145,7 +145,7 @@ class Error
         if (property_exists($exception, 'shouldLog') && $exception->shouldLog === false) {
             return;
         }
-        
+
         $log = dirname($_SERVER['DOCUMENT_ROOT']) . '/' . self::ERROR_LOG_FOLDER . '/' . date('Y-m-d') . '.txt';
         ini_set('error_log', $log);
         $message = "Uncaught exception: '" . get_class($exception) . "'";

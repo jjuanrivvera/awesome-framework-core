@@ -8,7 +8,6 @@ namespace Awesome;
  */
 class Route
 {
-
     /**
      * Route constructor
      * @param mixed $args
@@ -112,7 +111,7 @@ class Route
         if (!$this->hasCallable()) {
             return null;
         }
-        
+
         return call_user_func_array($this->callback, $args);
     }
 }

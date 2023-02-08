@@ -31,7 +31,7 @@ class View
      * @var array
      */
     protected static $data = [];
-    
+
     /**
      * Render a view template using Twig
      * @param string $template The template file
@@ -41,12 +41,12 @@ class View
     public static function make(string $template, array $args = [])
     {
         static $twig = null;
-        
+
         if ($twig === null) {
             $loader = new FilesystemLoader(App::getViewPath());
             $twig = new Environment($loader);
         }
-        
+
         self::$engine = $twig;
         self::$template = $template;
         self::$data = $args;

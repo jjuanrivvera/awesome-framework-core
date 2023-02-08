@@ -11,7 +11,6 @@ use Awesome\Exceptions\NotFoundException;
  */
 abstract class Model
 {
-
     /**
      * Table
      * @var string
@@ -116,7 +115,7 @@ abstract class Model
                 return "{$key} = :{$key}";
             }, array_keys($data)));
             $query .= " WHERE id = :id";
-    
+
             $statement = $this->db->connection->prepare($query);
             $statement->bindParam(':id', $id);
             $statement = $this->setStatementBindings($statement, $data);
@@ -147,11 +146,11 @@ abstract class Model
                 return ":{$key}";
             }, array_keys($data)));
             $query .= ")";
-    
+
             $statement = $this->db->connection->prepare($query);
-    
+
             $statement = $this->setStatementBindings($statement, $data);
-    
+
             $statement->execute();
             $id = $this->db->lastInsertId();
             $this->db->commit();
@@ -174,7 +173,7 @@ abstract class Model
         try {
             $this->db->beginTransaction();
             $query = "DELETE FROM {$this->table} WHERE id = :id";
-    
+
             $statement = $this->db->connection->prepare($query);
             $statement->bindParam(':id', $id);
             $statement->execute();
