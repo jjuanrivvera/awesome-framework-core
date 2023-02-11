@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a78412c7f24400aa1358b430cf77f174",
+    "content-hash": "973ca1fe5b290e363d655d62ffc2123b",
     "packages": [
         {
             "name": "filp/whoops",
@@ -141,16 +141,16 @@
         },
         {
             "name": "laravel/serializable-closure",
-            "version": "v1.2.2",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "47afb7fae28ed29057fdca37e16a84f90cc62fae"
+                "reference": "f23fe9d4e95255dacee1bf3525e0810d1a1b0f37"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/47afb7fae28ed29057fdca37e16a84f90cc62fae",
-                "reference": "47afb7fae28ed29057fdca37e16a84f90cc62fae",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/f23fe9d4e95255dacee1bf3525e0810d1a1b0f37",
+                "reference": "f23fe9d4e95255dacee1bf3525e0810d1a1b0f37",
                 "shasum": ""
             },
             "require": {
@@ -197,7 +197,7 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2022-09-08T13:45:54+00:00"
+            "time": "2023-01-30T18:31:20+00:00"
         },
         {
             "name": "php-di/invoker",
@@ -256,16 +256,16 @@
         },
         {
             "name": "php-di/php-di",
-            "version": "7.0.1",
+            "version": "7.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-DI/PHP-DI.git",
-                "reference": "1c7f1cc9cf6f51ff7f5f44bb1fa59243fcb7474a"
+                "reference": "5d1a8664e24f23b25e0426bbcb1288287fb49181"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/1c7f1cc9cf6f51ff7f5f44bb1fa59243fcb7474a",
-                "reference": "1c7f1cc9cf6f51ff7f5f44bb1fa59243fcb7474a",
+                "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/5d1a8664e24f23b25e0426bbcb1288287fb49181",
+                "reference": "5d1a8664e24f23b25e0426bbcb1288287fb49181",
                 "shasum": ""
             },
             "require": {
@@ -313,7 +313,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-DI/PHP-DI/issues",
-                "source": "https://github.com/PHP-DI/PHP-DI/tree/7.0.1"
+                "source": "https://github.com/PHP-DI/PHP-DI/tree/7.0.2"
             },
             "funding": [
                 {
@@ -325,7 +325,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-01-13T22:30:45+00:00"
+            "time": "2023-02-07T17:34:03+00:00"
         },
         {
             "name": "phpmailer/phpmailer",
@@ -835,16 +835,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.5.0",
+            "version": "v3.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "3ffcf4b7d890770466da3b2666f82ac054e7ec72"
+                "reference": "a6e0510cc793912b451fd40ab983a1d28f611c15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/3ffcf4b7d890770466da3b2666f82ac054e7ec72",
-                "reference": "3ffcf4b7d890770466da3b2666f82ac054e7ec72",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/a6e0510cc793912b451fd40ab983a1d28f611c15",
+                "reference": "a6e0510cc793912b451fd40ab983a1d28f611c15",
                 "shasum": ""
             },
             "require": {
@@ -895,7 +895,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.5.0"
+                "source": "https://github.com/twigphp/Twig/tree/v3.5.1"
             },
             "funding": [
                 {
@@ -907,7 +907,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-12-27T12:28:18+00:00"
+            "time": "2023-02-08T07:49:20+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -1593,16 +1593,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.5.31",
+            "version": "8.5.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "33c126b09a42de5c99e5e8032b54e8221264a74e"
+                "reference": "375686930d05c9fd7d20f6e5fc38121e8d7a9d55"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/33c126b09a42de5c99e5e8032b54e8221264a74e",
-                "reference": "33c126b09a42de5c99e5e8032b54e8221264a74e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/375686930d05c9fd7d20f6e5fc38121e8d7a9d55",
+                "reference": "375686930d05c9fd7d20f6e5fc38121e8d7a9d55",
                 "shasum": ""
             },
             "require": {
@@ -1670,7 +1670,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/8.5.31"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/8.5.32"
             },
             "funding": [
                 {
@@ -1686,7 +1686,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-10-28T05:57:37+00:00"
+            "time": "2023-01-26T08:30:25+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -2533,5 +2533,8 @@
         "ext-json": "*"
     },
     "platform-dev": [],
+    "platform-overrides": {
+        "php": "8.1"
+    },
     "plugin-api-version": "2.3.0"
 }
