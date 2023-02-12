@@ -7,6 +7,7 @@
 ## Structure
 
 ```
+examples/
 src/
 tests/
 vendor/
