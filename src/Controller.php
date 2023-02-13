@@ -97,7 +97,7 @@ abstract class Controller
 
         if (!App::isCli()) {
             echo $finalResponse;
-            return;
+            return null;
         }
 
         return $finalResponse;
