@@ -32,7 +32,7 @@ class Mail
      * @return void
      * @throws \Exception
      */
-    public function send($to, $subject, $body, $attachments = []): void
+    public function send(array|string $to, string $subject, string $body, array $attachments = []): void
     {
         //Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);

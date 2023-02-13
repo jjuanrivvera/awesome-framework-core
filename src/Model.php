@@ -15,13 +15,13 @@ abstract class Model
      * Table
      * @var string
      */
-    protected $table;
+    protected string $table;
 
     /**
      * Database
      * @var Database
      */
-    protected $db;
+    protected Database $db;
 
     /**
      * Model constructor.
@@ -42,7 +42,7 @@ abstract class Model
      * Get all records from the database
      * @return array<mixed>|false
      */
-    public function all()
+    public function all(): array|false
     {
         $query = "SELECT * FROM {$this->table}";
         $statement = $this->db->connection->prepare($query);
@@ -56,7 +56,7 @@ abstract class Model
      * @param int $id
      * @return mixed
      */
-    public function find(int $id)
+    public function find(int $id): mixed
     {
         $query = "SELECT * FROM {$this->table} WHERE id = :id";
         $statement = $this->db->connection->prepare($query);
@@ -71,7 +71,7 @@ abstract class Model
      * @param int|string $value
      * @return mixed
      */
-    public function findWhere(string $field, $value)
+    public function findWhere(string $field, $value): mixed
     {
         $query = "SELECT * FROM {$this->table} WHERE '{$field}' = :value";
         $statement = $this->db->connection->prepare($query);
@@ -86,7 +86,7 @@ abstract class Model
      * @param int|string $value
      * @return array<mixed>|false
      */
-    public function allBy(string $field, $value)
+    public function allBy(string $field, $value): array|false
     {
         $query = "SELECT * FROM {$this->table} WHERE '{$field}' = :value";
         $statement = $this->db->connection->prepare($query);
@@ -103,7 +103,7 @@ abstract class Model
      * @return mixed
      * @throws \Throwable
      */
-    public function update(int $id, array $data)
+    public function update(int $id, array $data): mixed
     {
         if (!$this->find($id)) {
             throw new NotFoundException('Record not found');
@@ -136,7 +136,7 @@ abstract class Model
      * @return mixed
      * @throws \Throwable
      */
-    public function create(array $data)
+    public function create(array $data): mixed
     {
         try {
             $this->db->beginTransaction();
@@ -169,7 +169,7 @@ abstract class Model
      * @return bool
      * @throws \Throwable
      */
-    public function delete(int $id)
+    public function delete(int $id): bool
     {
         try {
             $this->db->beginTransaction();
@@ -194,7 +194,7 @@ abstract class Model
      * @return void
      * @throws \Throwable
      */
-    public function deleteWhere(string $field, $value)
+    public function deleteWhere(string $field, int|string $value): void
     {
         try {
             $this->db->beginTransaction();
@@ -215,7 +215,7 @@ abstract class Model
      * @param array<mixed> $data
      * @return mixed
      */
-    private function setStatementBindings($statement, array $data)
+    private function setStatementBindings(mixed $statement, array $data): mixed
     {
         foreach ($data as $key => $value) {
             $valueType = gettype($value);

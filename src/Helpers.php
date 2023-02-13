@@ -1,26 +1,26 @@
 <?php
 
 use Awesome\App;
-use Awesome\Request;
+use Awesome\Http\Request;
 
 /**
  * Dummy function used to test
  * @param int $a
  * @param int $b
- * @return mixed
+ * @return int
  */
-function add($a, $b)
+function add(int $a, int $b): int
 {
     return $a + $b;
 }
 
 /**
  * Get environment variable or default
- * @param  string $key     Environment variable name
- * @param  mixed  $default Default value
+ * @param string $key     Environment variable name
+ * @param mixed|null $default Default value
  * @return mixed           Environment variable value or default
  */
-function env($key, $default = null)
+function env(string $key, mixed $default = null): mixed
 {
     if (isset($_ENV[$key])) {
         return $_ENV[$key];
@@ -37,7 +37,7 @@ function env($key, $default = null)
  * @throws \DI\DependencyException
  * @throws \DI\NotFoundException
  */
-function container($class = null, $parameters = [])
+function container(string $class = null, array $parameters = []): mixed
 {
     if (is_null($class)) {
         return App::getContainer();
@@ -48,12 +48,12 @@ function container($class = null, $parameters = [])
 
 /**
  * Get or set config value
- * @param string $key Config key
+ * @param string|null $key Config key
  * @return mixed|void
  * @throws \DI\DependencyException
  * @throws \DI\NotFoundException
  */
-function config($key = null)
+function config(string $key = null)
 {
     $config = container('Awesome\Config');
 
@@ -71,7 +71,7 @@ function config($key = null)
  * @param string $subject
  * @return string
  */
-function str_replace_first($search, $replace, $subject)
+function str_replace_first(string $search, string $replace, string $subject): string
 {
     return implode($replace, explode($search, $subject, 2));
 }
@@ -85,7 +85,7 @@ function str_replace_first($search, $replace, $subject)
  * @throws \DI\NotFoundException
  * @throws ReflectionException
  */
-function resolve_method_dependencies($params, Request $request)
+function resolve_method_dependencies(array $params, Request $request): array
 {
     $dependencies = [];
 

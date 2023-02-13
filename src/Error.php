@@ -3,6 +3,7 @@
 namespace Awesome;
 
 use Whoops\Run;
+use Awesome\Http\Response;
 use Whoops\Handler\PrettyPageHandler;
 
 /**
@@ -23,10 +24,10 @@ class Error
      * @param string $message Error message
      * @param string $file Filename the error was raised in
      * @param int $line Line number in the file
-     * @throws \ErrorException
      * @return void
+     *@throws \ErrorException
      */
-    public static function errorHandler($level, $message, $file, $line)
+    public static function errorHandler(int $level, string $message, string $file, int $line): void
     {
         if (error_reporting() !== 0) {
             throw new \ErrorException($message, 0, $level, $file, $line);
@@ -36,14 +37,14 @@ class Error
     /**
      * Exception handler
      * @param \Exception $exception The exception
-     * @throws \DI\DependencyException
+     * @return void
      * @throws \DI\NotFoundException
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
-     * @return void
+     * @throws \DI\DependencyException
      */
-    public static function exceptionHandler($exception)
+    public static function exceptionHandler(\Exception $exception): void
     {
         $code = $exception->getCode() ?: 500;
 
@@ -51,7 +52,7 @@ class Error
 
         self::logError($exception);
 
-        $request = container('Awesome\Request');
+        $request = container('Awesome\Http\Request');
         $isDebugMode = $_ENV['APP_DEBUG'] === 'true';
 
         if ($request->wantsJson()) {
@@ -76,7 +77,7 @@ class Error
      * @throws \Twig\Error\SyntaxError
      * @return void
      */
-    private static function renderException(\Exception $exception, int $code)
+    private static function renderException(\Exception $exception, int $code): void
     {
         $view = View::exists("$code.html") ? "$code.html" : '500.html';
 
@@ -107,7 +108,7 @@ class Error
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    public static function exceptionToJson($exception, $isDebugMode): void
+    public static function exceptionToJson(\Exception $exception, bool $isDebugMode): void
     {
         $code = $exception->getCode() ?: 500;
 
@@ -132,7 +133,7 @@ class Error
      * @param \Exception $exception
      * @return void
      */
-    public static function displayDebugError($exception): void
+    public static function displayDebugError(\Exception $exception): void
     {
         $whoops = new Run();
         $whoops->allowQuit(false);

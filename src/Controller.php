@@ -2,8 +2,9 @@
 
 namespace Awesome;
 
+use Awesome\Http\Request;
 use Awesome\View;
-use Awesome\Response;
+use Awesome\Http\Response;
 use Awesome\Exceptions\MethodNotFoundException;
 
 /**
@@ -22,7 +23,7 @@ abstract class Controller
      * Request
      * @var Request
      */
-    protected $request;
+    protected Request $request;
 
     /**
      * Controller constructor
@@ -44,7 +45,7 @@ abstract class Controller
      * @return mixed
      * @throws \Exception
      */
-    public function __call($name, $args)
+    public function __call(string $name, array $args)
     {
         $method = str_replace_first(self::FUNCTIONS_SUFFIX, '', $name);
 
@@ -75,19 +76,18 @@ abstract class Controller
      * After filter - called after an action method.
      * @param Response|View|string|null $response Response object
      * @return mixed
-     * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    protected function after($response)
+    protected function after($response): mixed
     {
         $finalResponse = '';
 
         if ($response instanceof Response) {
             if ($this->request->wantsJson()) {
-                $response->setHeader('Content-Type', 'application/json');
+                $response->withHeader('Content-Type', 'application/json');
             }
 
             $finalResponse = $response->send();
@@ -97,7 +97,7 @@ abstract class Controller
 
         if (!App::isCli()) {
             echo $finalResponse;
-            return;
+            return null;
         }
 
         return $finalResponse;

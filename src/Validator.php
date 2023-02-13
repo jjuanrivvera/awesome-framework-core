@@ -10,29 +10,29 @@ class Validator
      * Validation errors
      * @var array<mixed>
      */
-    protected $errors = [];
+    protected array $errors = [];
 
     /**
      * Validation rules
      * @var array<mixed>
      */
-    protected $rules = [];
+    protected array $rules = [];
 
     /**
      * Data to validate
      * @var array<mixed>
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * @var array<mixed>
      */
-    protected $messages = [];
+    protected array $messages = [];
 
     /**
      * @var array<mixed>
      */
-    protected $defaultMessages = [
+    protected array $defaultMessages = [
         'required' => 'The :attribute field is required.',
         'min' => 'The :attribute field must be at least :min characters.',
         'max' => 'The :attribute field must be less than :max characters.',
@@ -65,7 +65,7 @@ class Validator
     /**
      * @var Database
      */
-    private $db;
+    private mixed $db;
 
     /**
      * Validator constructor

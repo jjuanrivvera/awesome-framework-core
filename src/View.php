@@ -18,19 +18,19 @@ class View
      * View template
      * @var string
      */
-    protected static $template;
+    protected static string $template;
 
     /**
      * Template engine instance
      * @var Environment
      */
-    protected static $engine;
+    protected static Environment $engine;
 
     /**
      * Template variables
      * @var array<mixed>
      */
-    protected static $data = [];
+    protected static array $data = [];
 
     /**
      * Render a view template using Twig
@@ -38,7 +38,7 @@ class View
      * @param array<mixed> $args Associative array of data to display in the view (optional)
      * @return View
      */
-    public static function make(string $template, array $args = [])
+    public static function make(string $template, array $args = []): View
     {
         static $twig = null;
 
@@ -56,12 +56,12 @@ class View
 
     /**
      * Render a view template using Engine
-     * @return mixed
+     * @return string
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public static function render()
+    public static function render(): string
     {
         return self::$engine->render(self::$template, self::$data);
     }
@@ -76,9 +76,7 @@ class View
 
         try {
             $return = self::render();
-        } catch (LoaderError $e) {
-        } catch (RuntimeError $e) {
-        } catch (SyntaxError $e) {
+        } catch (LoaderError | RuntimeError | SyntaxError $e) {
         }
 
         return $return;
@@ -89,7 +87,7 @@ class View
      * @param string $template
      * @return bool
      */
-    public static function exists($template)
+    public static function exists(string $template): bool
     {
         return file_exists(App::getViewPath() . "/$template");
     }
