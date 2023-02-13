@@ -20,18 +20,14 @@ class Route
         protected string $regexPath = '',
         protected array $params = []
     ) {
-        $this->path = $path;
-        $this->method = $method;
-        $this->callback = $callback;
-        $this->regexPath = $regexPath;
-        $this->params = $params;
+        //
     }
 
     /**
      * Get route path
      * @return string
      */
-    public function getPath()
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -40,7 +36,7 @@ class Route
      * Get route method
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -49,7 +45,7 @@ class Route
      * Get route callback
      * @return callable
      */
-    public function getCallback()
+    public function getCallback(): callable
     {
         return $this->callback;
     }
@@ -58,7 +54,7 @@ class Route
      * Get route regex path
      * @return string
      */
-    public function getRegexPath()
+    public function getRegexPath(): string
     {
         return $this->regexPath;
     }
@@ -68,7 +64,7 @@ class Route
      * @param string $regexPath
      * @return void
      */
-    public function setRegexPath(string $regexPath)
+    public function setRegexPath(string $regexPath): void
     {
         $this->regexPath = $regexPath;
     }
@@ -77,7 +73,7 @@ class Route
      * Get route params
      * @return array<mixed>
      */
-    public function getParams()
+    public function getParams(): array
     {
         return $this->params;
     }
@@ -87,7 +83,7 @@ class Route
      * @param array<mixed> $params
      * @return void
      */
-    public function setParams(array $params)
+    public function setParams(array $params): void
     {
         $this->params = $params;
     }
@@ -96,7 +92,7 @@ class Route
      * Has callable
      * @return bool
      */
-    public function hasCallable()
+    public function hasCallable(): bool
     {
         return is_callable($this->callback);
     }
@@ -106,7 +102,7 @@ class Route
      * @param array<mixed> $args
      * @return mixed
      */
-    public function call($args)
+    public function call(array $args): mixed
     {
         if (!$this->hasCallable()) {
             return null;

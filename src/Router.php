@@ -2,8 +2,12 @@
 
 namespace Awesome;
 
+use Awesome\Http\Request;
+use DI\DependencyException;
+use Psr\Http\Message\RequestInterface;
 use Awesome\Exceptions\NotFoundException;
 use Awesome\Exceptions\ControllerNotFoundException;
+use InvalidArgumentException;
 
 /**
  * Router
@@ -16,29 +20,23 @@ class Router
      * Array of routes
      * @var Route[]
      */
-    protected static $routes = [];
+    protected static array $routes = [];
 
     /**
      * Parameters from the matched route
      * @var array<mixed>
      */
-    protected static $params = [];
-
-    /**
-     * Request
-     * @var Request
-     */
-    protected static $request;
+    protected static array $params = [];
 
     /**
      * Add a route to the routing table
      * @param string $path The route URL
-     * @param string|callable $action The route callback action
+     * @param callable|string $action The route callback action
      * @param string $method The request method
      * @return void
      * @throws \Throwable
      */
-    public static function add($path, $action, $method = 'GET')
+    public static function add(string $path, callable|string $action, string $method = 'GET'): void
     {
         $regexPath = self::buildRegexPath($path);
         $callback = null;
@@ -50,7 +48,7 @@ class Router
             $params = explode('@', $action);
 
             if (count($params) != 2) {
-                throw new \Exception('Invalid action');
+                throw new \InvalidArgumentException('Invalid action');
             }
 
             $params = [
@@ -73,9 +71,9 @@ class Router
     /**
      * Build Regex Path
      * @param string $path
-     * @return string|string[]|null
+     * @return string
      */
-    public static function buildRegexPath($path)
+    public static function buildRegexPath(string $path): string
     {
         // Root path to empty string
         if ($path === '/') {
@@ -91,89 +89,87 @@ class Router
         // Convert variables with custom regular expressions e.g. {id:\d+}
         $path = preg_replace('/\{([a-z]+):([^\}]+)\}/', '(?P<\1>\2)', $path);
 
-        // Add start and end delimiters, and case insensitive flag
-        $path = '/^' . $path . '$/i';
-
-        return $path;
+        // Add start and end delimiters, and case-insensitive flag
+        return '/^' . $path . '$/i';
     }
 
     /**
      * Add a get route to the routing table
      * @param string $route The route URL
-     * @param array<mixed> $params Parameters (controller, action, etc.)
+     * @param callable|string $action
      * @return void
      * @throws \Throwable
      */
-    public static function get($route, $params = [])
+    public static function get(string $route, callable|string $action): void
     {
-        self::add($route, $params, 'GET');
+        self::add($route, $action, 'GET');
     }
 
     /**
      * Add a post route to the routing table
      * @param string $route The route URL
-     * @param array<mixed> $params Parameters (controller, action, etc.)
+     * @param string|callable $action
      * @return void
      * @throws \Throwable
      */
-    public static function post($route, $params = [])
+    public static function post(string $route, callable|string $action): void
     {
-        self::add($route, $params, 'POST');
+        self::add($route, $action, 'POST');
     }
 
     /**
      * Add a put route to the routing table
      * @param string $route The route URL
-     * @param array<mixed> $params Parameters (controller, action, etc.)
+     * @param string|callable $action
      * @return void
      * @throws \Throwable
      */
-    public static function put($route, $params = [])
+    public static function put(string $route, callable|string $action): void
     {
-        self::add($route, $params, 'PUT');
+        self::add($route, $action, 'PUT');
     }
 
     /**
-     * Add a delete route to the routing table
+     * Add a deleted route to the routing table
      * @param string $route The route URL
-     * @param array<mixed> $params Parameters (controller, action, etc.)
+     * @param string|callable $action
      * @return void
      * @throws \Throwable
      */
-    public static function delete($route, $params = [])
+    public static function delete(string $route, callable|string $action): void
     {
-        self::add($route, $params, 'DELETE');
+        self::add($route, $action, 'DELETE');
     }
 
     /**
      * Add a patch route to the routing table
      * @param string $route The route URL
-     * @param array<mixed> $params Parameters (controller, action, etc.)
+     * @param string|callable $action
      * @return void
      * @throws \Throwable
      */
-    public static function patch($route, $params = [])
+    public static function patch(string $route, callable|string $action): void
     {
-        self::add($route, $params, 'PATCH');
+        self::add($route, $action, 'PATCH');
     }
 
     /**
      * Add a options route to the routing table
      * @param string $route The route URL
-     * @param array<mixed> $params Parameters (controller, action, etc.)
+     * @param string|callable $action
      * @return void
      * @throws \Throwable
      */
-    public static function options($route, $params = [])
+    public static function options(string $route, callable|string $action): void
     {
-        self::add($route, $params, 'OPTIONS');
+        self::add($route, $action, 'OPTIONS');
     }
 
     /**
      * Get all the routes from the routing table
      * @return array<Route>
      */
-    public static function getRoutes()
+    public static function getRoutes(): array
     {
         return self::$routes;
     }
@@ -185,7 +181,7 @@ class Router
      * @param Request $request The request object
      * @return Route|bool The route object
      */
-    public static function match(string $url, Request $request)
+    public static function match(string $url, Request $request): bool|Route
     {
         foreach (self::$routes as $route) {
             $match = preg_match($route->getRegexPath(), $url, $matches);
@@ -214,26 +210,27 @@ class Router
      * Get the currently matched parameters
      * @return array<mixed>
      */
-    public static function getParams()
+    public static function getParams(): array
     {
         return self::$params;
     }
 
     /**
      * Dispatch the route, creating the controller object and running the action method
+     * @param RequestInterface|null $request
      * @return mixed
-     * @throws \Exception
+     * @throws ControllerNotFoundException
+     * @throws NotFoundException
+     * @throws DependencyException
+     * @throws \DI\NotFoundException
+     * @throws \ReflectionException
      */
-    public static function dispatch(Request $request = null)
+    public static function dispatch(RequestInterface $request = null): mixed
     {
-        $request = $request ?? container()->get('Awesome\Request');
-        $uri = $request->getUri();
+        $request = $request ?? container()->get('Awesome\Http\Request');
+        $path = $request->getUri()->getPath();
 
-        if (str_starts_with($uri, '/')) {
-            $uri = substr($uri, 1);
-        }
-
-        $url = self::removeQueryStringVariables($uri);
+        $url = self::removeQueryStringVariables($path);
         $route = self::match($url, $request);
 
         if (!$route) {
@@ -287,12 +284,12 @@ class Router
      * @param string $url The full URL
      * @return string The URL with the query string variables removed
      */
-    private static function removeQueryStringVariables($url)
+    private static function removeQueryStringVariables(string $url): string
     {
         if ($url != '') {
             $parts = explode('&', $url, 2);
 
-            if (strpos($parts[0], '=') === false) {
+            if (!str_contains($parts[0], '=')) {
                 $url = $parts[0];
             } else {
                 $url = '';
@@ -307,7 +304,7 @@ class Router
      * route parameters is added if present.
      * @return string The request URL
      */
-    private static function getNamespace()
+    private static function getNamespace(): string
     {
         $namespace = 'App\Controllers\\';
 

@@ -26,7 +26,7 @@ $server->on("start", function () {
 });
 
 $server->on("request", function ($request, $response) use ($app) {
-    container()->set('Awesome\Request', new App\Http\Request(
+    container()->set('Awesome\Http\Request', new App\Http\Request(
         method: $request->server["request_method"],
         headers: $request->header,
         body: $request->getContent(),

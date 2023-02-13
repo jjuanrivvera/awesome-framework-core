@@ -16,12 +16,12 @@ class Database
      * Connection
      * @var PDO|null
      */
-    public $connection = null;
+    public ?PDO $connection = null;
 
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
 
     /**
      * Database constructor
@@ -37,7 +37,7 @@ class Database
      * @throws \Exception
      * @return void
      */
-    public function connect()
+    public function connect(): void
     {
         try {
             $this->connection = new PDO(
@@ -54,7 +54,7 @@ class Database
      * Begin transaction
      * @return void
      */
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->connection->beginTransaction();
     }
@@ -63,7 +63,7 @@ class Database
      * Commit transaction
      * @return void
      */
-    public function commit()
+    public function commit(): void
     {
         $this->connection->commit();
     }
@@ -72,7 +72,7 @@ class Database
      * Rollback transaction
      * @return void
      */
-    public function rollback()
+    public function rollback(): void
     {
         $this->connection->rollBack();
     }
@@ -81,7 +81,7 @@ class Database
      * Get last insert id
      * @return string|false
      */
-    public function lastInsertId()
+    public function lastInsertId(): false|string
     {
         return $this->connection->lastInsertId();
     }

@@ -13,14 +13,14 @@ interface Contract
      * Get all records
      * @return array<mixed>|false
      */
-    public function all();
+    public function all(): array|false;
 
     /**
      * Get a single record
      * @param int $id
      * @return mixed
      */
-    public function find(int $id);
+    public function find(int $id): mixed;
 
     /**
      * Get records with condition
@@ -28,14 +28,14 @@ interface Contract
      * @param int|string $value
      * @return mixed
      */
-    public function findWhere(string $field, $value);
+    public function findWhere(string $field, int|string $value): mixed;
 
     /**
      * Create a record
      * @param array<mixed> $data
      * @return mixed
      */
-    public function create(array $data);
+    public function create(array $data): mixed;
 
     /**
      * Update a record
@@ -43,14 +43,14 @@ interface Contract
      * @param array<mixed> $data
      * @return mixed
      */
-    public function update($id, array $data);
+    public function update(int $id, array $data): mixed;
 
     /**
      * Delete a record
      * @param int $id
      * @return bool
      */
-    public function delete(int $id);
+    public function delete(int $id): bool;
 
     /**
      * Delete records with condition
@@ -58,5 +58,5 @@ interface Contract
      * @param int|string $value
      * @return mixed
      */
-    public function deleteWhere(string $field, $value);
+    public function deleteWhere(string $field, int|string $value): mixed;
 }

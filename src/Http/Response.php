@@ -1,8 +1,10 @@
 <?php
 
-namespace Awesome;
+namespace Awesome\Http;
 
-final class Response
+use Psr\Http\Message\ResponseInterface;
+
+final class Response extends Message implements ResponseInterface
 {
     public const HTTP_CONTINUE = 100;
     public const HTTP_SWITCHING_PROTOCOLS = 101;
@@ -77,11 +79,6 @@ final class Response
      * @var int
      */
     protected $statusCode;
-
-    /**
-     * @var array<mixed>
-     */
-    protected $headers = [];
 
     /**
      * @var string
@@ -164,12 +161,6 @@ final class Response
     ];
 
     /**
-     * Request
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * Constructor
      * @param mixed $content The response content
      * @param int $statusCode The response status code
@@ -183,9 +174,13 @@ final class Response
         array $headers = []
     ) {
         $this->setContent($content);
+
+        if (is_string($content)) {
+            $this->body = new Body($content);
+        }
+
         $this->statusCode = $statusCode;
-        $this->headers = $headers;
-        $this->request = container()->get('Awesome\Request');
+        $this->headers = $this->parseHeaders($headers);
     }
 
     /**
@@ -233,6 +228,28 @@ final class Response
     }
 
     /**
+     * Parse headers
+     * @param array<mixed> $headers The response headers
+     * @return array<mixed> The parsed headers
+     */
+    public function parseHeaders($headers)
+    {
+        $parsedHeaders = [];
+
+        foreach ($headers as $key => $value) {
+            $key = str_replace(' ', '-', ucwords(str_replace('-', ' ', $key)));
+
+            if (is_string($value)) {
+                $parsedHeaders[$key] = explode(',', $value);
+            } else {
+                $parsedHeaders[$key] = $value;
+            }
+        }
+
+        return $parsedHeaders;
+    }
+
+    /**
      * Get the response status code
      * @return int The response status code
      */
@@ -242,34 +259,22 @@ final class Response
     }
 
     /**
-     * Set the response status code
-     * @param int $statusCode The response status code
-     * @return Response The current response
+     * Return an instance with the specified status code and, optionally, reason phrase.
+     * @param int $code The 3-digit integer result code to set.
+     * @param string $reasonPhrase The reason phrase to use with the
+     *     provided status code; if none is provided, implementations MAY
+     *     use the defaults as suggested in the HTTP specification.
+     * @return static
+     * @throws \InvalidArgumentException For invalid status code arguments.
      */
-    public function setStatusCode($statusCode)
+    public function withStatus($code, $reasonPhrase = '')
     {
-        $this->statusCode = $statusCode;
+        if (!is_int($code) || $code < 100 || $code > 599) {
+            throw new \InvalidArgumentException('Invalid HTTP status code');
+        }
 
-        return $this;
-    }
-
-    /**
-     * Get the response headers
-     * @return array<mixed> The response headers
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    /**
-     * Set the response headers
-     * @param array<mixed> $headers The response headers
-     * @return Response The current response
-     */
-    public function setHeaders(array $headers)
-    {
-        $this->headers = $headers;
+        $this->statusCode = $code;
+        $this->statusText = $reasonPhrase;
 
         return $this;
     }
@@ -321,6 +326,15 @@ final class Response
      * @return string The response status text
      */
     public function getStatusText()
+    {
+        return $this->statusText;
+    }
+
+    /**
+     * Gets the response reason phrase associated with the status code.
+     * @return string Reason phrase; must return an empty string if none present.
+     */
+    public function getReasonPhrase()
     {
         return $this->statusText;
     }
@@ -380,50 +394,6 @@ final class Response
     }
 
     /**
-     * Get the response headers
-     * @param string $name
-     * @return array<mixed> The response headers
-     */
-    public function getHeader(string $name)
-    {
-        return $this->headers[$name];
-    }
-
-    /**
-     * Set the response headers
-     * @param string $name
-     * @param string $header
-     * @return Response The current response
-     */
-    public function setHeader(string $name, string $header)
-    {
-        $this->headers[$name] = $header;
-        return $this;
-    }
-
-    /**
-     * Get the response headers
-     * @param string $name
-     * @return mixed The response headers
-     */
-    public function getHeaderByName($name)
-    {
-        return $this->headers[$name];
-    }
-
-    /**
-     * Set the response headers
-     * @param string $name
-     * @param string $header
-     * @return Response The current response
-     */
-    public function setHeaderByName($name, $header)
-    {
-        $this->headers[$name] = $header;
-        return $this;
-    }
-
-    /**
      * Send the response with the current status code and content
      * @return Response The current response
      */
@@ -448,8 +418,8 @@ final class Response
     public function sendHeaders()
     {
         if (!headers_sent()) {
-            foreach ($this->headers as $name => $header) {
-                header($name . ': ' . $header);
+            foreach ($this->headers as $name) {
+                header($name . ': ' . $this->getHeaderLine($name));
             }
 
             header('Content-Type: ' . $this->mimeType . '; charset=' . $this->charset);

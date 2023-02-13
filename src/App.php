@@ -5,6 +5,7 @@ namespace Awesome;
 use Exception;
 use DI\Container;
 use DI\ContainerBuilder;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Class App
@@ -23,32 +24,32 @@ class App
      * Container instance
      * @var Container
      */
-    protected static $container;
+    protected static Container $container;
 
     /**
      * @var Router
      */
-    protected static $router;
+    protected static Router $router;
 
     /**
      * @var bool|null
      */
-    protected static $isCli = null;
+    protected static ?bool $isCli = null;
 
     /**
      * @var string
      */
-    protected static $configPath;
+    protected static string $configPath;
 
     /**
      * @var string
      */
-    protected static $routesPath;
+    protected static string $routesPath;
 
     /**
      * @var string
      */
-    protected static $viewPath;
+    protected static string $viewPath;
 
     /**
      * App Constructor
@@ -64,7 +65,7 @@ class App
         string $viewPath = null,
         bool $isCli = null
     ) {
-        self::$isCli = is_null($isCli) ?? php_sapi_name() === 'cli';
+        self::$isCli = $isCli ?? php_sapi_name() === 'cli';
         self::$configPath = $configPath ?? dirname(__DIR__) . '/config/*.php';
         self::$routesPath = $routesPath ?? dirname(__DIR__) . '/routes/*.php';
         self::$viewPath = $viewPath ?? '../App/Views';
@@ -77,11 +78,11 @@ class App
      * @return void
      * @throws Exception
      */
-    public function initializeContainer()
+    public function initializeContainer(): void
     {
         $container = new Container();
 
-        $env = isset($_ENV['APP_ENV']) ? $_ENV['APP_ENV'] : self::DEFAULT_APP_ENVIRONMENT;
+        $env = $_ENV['APP_ENV'] ?? self::DEFAULT_APP_ENVIRONMENT;
 
         if ($env === 'production') {
             $builder = new ContainerBuilder();
@@ -118,7 +119,7 @@ class App
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    public function addRouter($class): void
+    public function addRouter(string $class): void
     {
         self::$router = self::$container->get($class);
     }
@@ -187,14 +188,14 @@ class App
      * @throws \DI\NotFoundException
      * @throws Exception
      */
-    public static function loadRouter()
+    public static function loadRouter(): void
     {
         self::$router = self::$router ?: self::$container->get(Router::class);
     }
 
     /**
      * Load repositories
-     * @param string $contractsPath
+     * @param string|null $contractsPath
      * @param string $contractsNamespace
      * @param string $repositoriesNamespace Namespace of repositories
      * @param string $contractsSuffix
@@ -203,11 +204,11 @@ class App
      * @throws Exception
      */
     public static function loadRepositories(
-        $contractsPath = null,
-        $contractsNamespace = 'App\Contracts\\',
-        $repositoriesNamespace = 'App\Repositories\\',
-        $contractsSuffix = 'Contract',
-        $repositoriesSuffix = 'Repository'
+        string $contractsPath = null,
+        string $contractsNamespace = 'App\Contracts\\',
+        string $repositoriesNamespace = 'App\Repositories\\',
+        string $contractsSuffix = 'Contract',
+        string $repositoriesSuffix = 'Repository'
     ) {
         $contractsPath = $contractsPath ?: dirname($_SERVER['DOCUMENT_ROOT']) . '/App/Contracts/*.php';
 
@@ -235,7 +236,7 @@ class App
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    public function init()
+    public function init(): void
     {
         self::loadErrorAndExceptionHandler();
         self::loadRoutes();
@@ -247,8 +248,9 @@ class App
      * @return mixed
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
+     * @throws Exception
      */
-    public function run(Request $request = null)
+    public function run(RequestInterface $request = null): mixed
     {
         return self::$router->dispatch($request);
     }

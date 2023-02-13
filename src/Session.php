@@ -14,9 +14,9 @@ class Session
      * Starts new or resumes existing session
      * @return bool
      */
-    public function start()
+    public function start(): bool
     {
-        if ($this->status == true) {
+        if ($this->status) {
             return true;
         }
 
@@ -29,9 +29,9 @@ class Session
      * End existing session, destroy, unset and delete session cookie
      * @return void
      */
-    public function end()
+    public function end(): void
     {
-        if ($this->status == false) {
+        if (!$this->status) {
             return;
         }
 
@@ -48,7 +48,7 @@ class Session
      * @param mixed $value
      * @return mixed
      */
-    public function set(string $key, $value)
+    public function set(string $key, mixed $value): mixed
     {
         return $_SESSION[$key] = $value;
     }
@@ -58,7 +58,7 @@ class Session
      * @param string $key
      * @return bool
      */
-    public function has(string $key)
+    public function has(string $key): bool
     {
         if (isset($_SESSION[$key])) {
             return true;
@@ -72,7 +72,7 @@ class Session
      * @param string $key
      * @return mixed
      */
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         if (!isset($_SESSION[$key])) {
             return false;

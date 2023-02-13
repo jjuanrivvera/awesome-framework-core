@@ -13,14 +13,14 @@ class Config
      * Config params
      * @var array<mixed>
      */
-    protected $params;
+    protected array $params;
 
     /**
      * Get config value
      * @param string $key Config key
      * @return mixed
      */
-    public function get($key)
+    public function get(string $key): mixed
     {
         $keys = explode('.', $key);
 

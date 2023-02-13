@@ -10,13 +10,13 @@ abstract class Repository implements Contract
     /**
      * @var mixed
      */
-    protected $model;
+    protected mixed $model;
 
     /**
      * Get all records from the database
      * @return array<mixed>|false
      */
-    public function all()
+    public function all(): array|false
     {
         return $this->model->all();
     }
@@ -26,7 +26,7 @@ abstract class Repository implements Contract
      * @param int $id
      * @return mixed
      */
-    public function find(int $id)
+    public function find(int $id): mixed
     {
         return $this->model->find($id);
     }
@@ -37,7 +37,7 @@ abstract class Repository implements Contract
      * @param int|string $value
      * @return mixed
      */
-    public function findWhere(string $field, $value)
+    public function findWhere(string $field, int|string $value): mixed
     {
         return $this->model->findWhere($field, $value);
     }
@@ -48,7 +48,7 @@ abstract class Repository implements Contract
      * @param int|string $value
      * @return array<mixed>|false
      */
-    public function allBy(string $field, $value)
+    public function allBy(string $field, int|string $value): array|false
     {
         return $this->model->allBy($field, $value);
     }
@@ -59,7 +59,7 @@ abstract class Repository implements Contract
      * @param array<mixed> $data
      * @return mixed
      */
-    public function update($id, array $data)
+    public function update(int $id, array $data): mixed
     {
         return $this->model->update($id, $data);
     }
@@ -69,7 +69,7 @@ abstract class Repository implements Contract
      * @param array<mixed> $data
      * @return mixed
      */
-    public function create(array $data)
+    public function create(array $data): mixed
     {
         return $this->model->create($data);
     }
@@ -79,7 +79,7 @@ abstract class Repository implements Contract
      * @param int $id
      * @return bool
      */
-    public function delete(int $id)
+    public function delete(int $id): bool
     {
         return $this->model->delete($id);
     }
@@ -90,7 +90,7 @@ abstract class Repository implements Contract
      * @param int|string $value
      * @return bool
      */
-    public function deleteWhere(string $field, $value)
+    public function deleteWhere(string $field, int|string $value): bool
     {
         return $this->model->deleteWhere($field, $value);
     }
