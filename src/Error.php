@@ -36,7 +36,7 @@ class Error
 
     /**
      * Exception handler
-     * @param \Exception $exception The exception
+     * @param \Throwable $exception The exception
      * @return void
      * @throws \DI\NotFoundException
      * @throws \Twig\Error\LoaderError
@@ -44,7 +44,7 @@ class Error
      * @throws \Twig\Error\SyntaxError
      * @throws \DI\DependencyException
      */
-    public static function exceptionHandler(\Exception $exception): void
+    public static function exceptionHandler(\Throwable $exception): void
     {
         $code = $exception->getCode() ?: 500;
 
@@ -70,14 +70,14 @@ class Error
 
     /**
      * Render exception
-     * @param \Exception $exception
+     * @param \Throwable $exception
      * @param int $code
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      * @return void
      */
-    private static function renderException(\Exception $exception, int $code): void
+    private static function renderException(\Throwable $exception, int $code): void
     {
         $view = View::exists("$code.html") ? "$code.html" : '500.html';
 
@@ -102,13 +102,13 @@ class Error
 
     /**
      * Parse exception to JSON
-     * @param \Exception $exception
+     * @param \Throwable $exception
      * @param bool $isDebugMode
      * @return void
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
      */
-    public static function exceptionToJson(\Exception $exception, bool $isDebugMode): void
+    public static function exceptionToJson(\Throwable $exception, bool $isDebugMode): void
     {
         $code = $exception->getCode() ?: 500;
 
@@ -130,10 +130,10 @@ class Error
 
     /**
      * Display error in debug mode
-     * @param \Exception $exception
+     * @param \Throwable $exception
      * @return void
      */
-    public static function displayDebugError(\Exception $exception): void
+    public static function displayDebugError(\Throwable $exception): void
     {
         $whoops = new Run();
         $whoops->allowQuit(false);
@@ -144,10 +144,10 @@ class Error
 
     /**
      * Log the error
-     * @param \Exception $exception
+     * @param \Throwable $exception
      * @return void
      */
-    public static function logError(\Exception $exception): void
+    public static function logError(\Throwable $exception): void
     {
         if (property_exists($exception, 'shouldLog') && $exception->shouldLog === false) {
             return;
