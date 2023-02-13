@@ -32,4 +32,13 @@ abstract class BaseException extends Exception
 
         parent::__construct($message, $code, $previous);
     }
+
+    /**
+     * Should the exception be logged?
+     * @return bool
+     */
+    public function shouldLog(): bool
+    {
+        return $this->shouldLog;
+    }
 }

@@ -144,12 +144,12 @@ class Error
 
     /**
      * Log the error
-     * @param \Throwable $exception
+     * @param mixed $exception
      * @return void
      */
-    public static function logError(\Throwable $exception): void
+    public static function logError($exception): void
     {
-        if (property_exists($exception, 'shouldLog') && $exception->shouldLog === false) {
+        if (method_exists($exception, 'shouldLog') && !$exception->shouldLog()) {
             return;
         }
 

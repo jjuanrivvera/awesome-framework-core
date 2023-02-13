@@ -4,10 +4,10 @@ namespace Awesome;
 
 use Awesome\Http\Request;
 use DI\DependencyException;
+use InvalidArgumentException;
 use Psr\Http\Message\RequestInterface;
 use Awesome\Exceptions\NotFoundException;
 use Awesome\Exceptions\ControllerNotFoundException;
-use InvalidArgumentException;
 
 /**
  * Router
@@ -48,7 +48,7 @@ class Router
             $params = explode('@', $action);
 
             if (count($params) != 2) {
-                throw new \InvalidArgumentException('Invalid action');
+                throw new InvalidArgumentException('Invalid action');
             }
 
             $params = [
@@ -75,11 +75,6 @@ class Router
      */
     public static function buildRegexPath(string $path): string
     {
-        // Root path to empty string
-        if ($path === '/') {
-            $path = '';
-        }
-
         // Convert the path to a regular expression: escape forward slashes
         $path = preg_replace('/\//', '\\/', $path);
 
