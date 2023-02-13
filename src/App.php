@@ -27,9 +27,9 @@ class App
     protected static Container $container;
 
     /**
-     * @var Router
+     * @var Router|null
      */
-    protected static Router $router;
+    protected static ?Router $router = null;
 
     /**
      * @var bool|null
