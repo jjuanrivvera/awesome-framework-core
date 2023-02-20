@@ -3,6 +3,7 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
 [![Total Downloads][ico-downloads]][link-downloads]
+[![Maintainability](https://api.codeclimate.com/v1/badges/e21ef866fb5b23a90f58/maintainability)](https://codeclimate.com/github/jjuanrivvera/awesome-framework-core/maintainability)
 
 ## Structure
 
