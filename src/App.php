@@ -4,7 +4,6 @@ namespace Awesome;
 
 use Exception;
 use DI\Container;
-use DI\ContainerBuilder;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -15,41 +14,41 @@ use Psr\Http\Message\RequestInterface;
 class App
 {
     /**
-     * Default application environment
-     * @var string
+     * Application instance
+     * @var App
      */
-    private const DEFAULT_APP_ENVIRONMENT = 'production';
+    private static ?App $instance = null;
 
     /**
      * Container instance
      * @var Container
      */
-    protected static Container $container;
+    private Container $container;
 
     /**
      * @var Router|null
      */
-    protected static ?Router $router = null;
+    private ?Router $router = null;
 
     /**
      * @var bool|null
      */
-    protected static ?bool $isCli = null;
+    private ?bool $isCli = null;
 
     /**
      * @var string
      */
-    protected static string $configPath;
+    private string $configPath;
 
     /**
      * @var string
      */
-    protected static string $routesPath;
+    private string $routesPath;
 
     /**
      * @var string
      */
-    protected static string $viewPath;
+    private string $viewPath;
 
     /**
      * App Constructor
@@ -59,18 +58,55 @@ class App
      * @param bool $isCli
      * @throws Exception
      */
-    public function __construct(
+    private function __construct(
         string $configPath = null,
         string $routesPath = null,
         string $viewPath = null,
         bool $isCli = null
     ) {
-        self::$isCli = $isCli ?? php_sapi_name() === 'cli';
-        self::$configPath = $configPath ?? dirname(__DIR__) . '/config/*.php';
-        self::$routesPath = $routesPath ?? dirname(__DIR__) . '/routes/*.php';
-        self::$viewPath = $viewPath ?? '../App/Views';
+        $this->isCli = $isCli ?? php_sapi_name() === 'cli';
+        $this->configPath = $configPath ?? dirname(__DIR__) . '/config';
+        $this->routesPath = $routesPath ?? dirname(__DIR__) . '/routes/*.php';
+        $this->viewPath = $viewPath ?? '../App/Views';
 
         $this->initializeContainer();
+    }
+
+    /**
+     * Prevents cloning of the instance.
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * Prevents unserialization of the instance.
+     */
+    public function __wakeup()
+    {
+        throw new Exception('Cannot unserialize singleton');
+    }
+
+    /**
+     * Get application instance
+     * @param string|null $configPath
+     * @param string|null $routesPath
+     * @param string|null $viewPath
+     * @param bool|null $isCli
+     * @return App
+     * @throws Exception
+     */
+    public static function getInstance(
+        string $configPath = null,
+        string $routesPath = null,
+        string $viewPath = null,
+        bool $isCli = null
+    ): App {
+        if (is_null(self::$instance)) {
+            self::$instance = new self($configPath, $routesPath, $viewPath, $isCli);
+        }
+
+        return self::$instance;
     }
 
     /**
@@ -80,36 +116,25 @@ class App
      */
     public function initializeContainer(): void
     {
-        $container = new Container();
-
-        $env = $_ENV['APP_ENV'] ?? self::DEFAULT_APP_ENVIRONMENT;
-
-        if ($env === 'production') {
-            $builder = new ContainerBuilder();
-            $builder->enableCompilation(dirname(__DIR__) . '/tmp');
-            $builder->writeProxiesToFile(true, dirname(__DIR__) . '/tmp/proxies');
-            $container = $builder->build();
-        }
-
-        self::$container = $container;
+        $this->container = new Container();
     }
 
     /**
      * Get container instance
      * @return Container
      */
-    public static function getContainer(): Container
+    public function getContainer(): Container
     {
-        return self::$container;
+        return $this->container;
     }
 
     /**
      * Get router instance
      * @return Router
      */
-    public static function getRouter(): Router
+    public function getRouter(): Router
     {
-        return self::$router;
+        return $this->router;
     }
 
     /**
@@ -121,49 +146,56 @@ class App
      */
     public function addRouter(string $class): void
     {
-        self::$router = self::$container->get($class);
+        $this->router = $this->container->get($class);
     }
 
     /**
      * Know if the application is running in cli
      * @return bool
      */
-    public static function isCli(): bool
+    public function isCli(): bool
     {
-        return self::$isCli;
+        return $this->isCli;
     }
 
     /**
      * Get config path
+     * @return string
      */
-    public static function getConfigPath(): string
+    public function getConfigPath(): string
     {
-        return self::$configPath;
+        return $this->configPath;
     }
 
     /**
      * Get route path
+     * @return string
      */
-    public static function getRoutesPath(): string
+    public function getRoutesPath(): string
     {
-        return self::$routesPath;
+        return $this->routesPath;
     }
 
     /**
      * Get view path
+     * @return string
      */
-    public static function getViewPath(): string
+    public function getViewPath(): string
     {
-        return self::$viewPath;
+        return $this->viewPath;
     }
 
     /**
-     * Load routes
+     * Load routes by requiring all files in the routes directory
      * @return void
      */
-    public static function loadRoutes(): void
+    public function loadRoutes(): void
     {
-        $files = glob(self::$routesPath);
+        if (!is_dir(dirname($this->routesPath))) {
+            throw new Exception('Routes directory not found');
+        }
+
+        $files = glob($this->routesPath);
 
         foreach ($files as $file) {
             require $file;
@@ -171,7 +203,7 @@ class App
     }
 
     /**
-     * Load error and exception handler
+     * Load error and exception handlers
      * @return void
      */
     public function loadErrorAndExceptionHandler(): void
@@ -188,9 +220,9 @@ class App
      * @throws \DI\NotFoundException
      * @throws Exception
      */
-    public static function loadRouter(): void
+    public function loadRouter(): void
     {
-        self::$router = self::$router ?: self::$container->get(Router::class);
+        $this->router = $this->router ?: $this->container->get(Router::class);
     }
 
     /**
@@ -203,7 +235,7 @@ class App
      * @return void
      * @throws Exception
      */
-    public static function loadRepositories(
+    public function loadRepositories(
         string $contractsPath = null,
         string $contractsNamespace = 'App\Contracts\\',
         string $repositoriesNamespace = 'App\Repositories\\',
@@ -222,8 +254,8 @@ class App
             $repository = $repositoriesNamespace . str_replace($contractsSuffix, $repositoriesSuffix, $class);
 
             try {
-                $repositoryClass = self::$container->get($repository);
-                self::$container->set($contract, $repositoryClass);
+                $repositoryClass = $this->container->get($repository);
+                $this->container->set($contract, $repositoryClass);
             } catch (\Exception $th) {
                 throw new Exception('Error loading repository for ' . $class);
             }
@@ -238,9 +270,9 @@ class App
      */
     public function init(): void
     {
-        self::loadErrorAndExceptionHandler();
-        self::loadRoutes();
-        self::loadRouter();
+        $this->loadErrorAndExceptionHandler();
+        $this->loadRoutes();
+        $this->loadRouter();
     }
 
     /**
@@ -252,6 +284,6 @@ class App
      */
     public function run(RequestInterface $request = null): mixed
     {
-        return self::$router->dispatch($request);
+        return $this->router->dispatch($request);
     }
 }

@@ -12,7 +12,7 @@ class AppTest extends TestCase
     {
         $dotenv = Dotenv::createImmutable(dirname(__DIR__));
         $dotenv->load();
-        $this->app = new App();
+        $this->app = App::getInstance();
     }
 
     public function testApp(): void

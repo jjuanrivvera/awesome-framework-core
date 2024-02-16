@@ -95,7 +95,9 @@ abstract class Controller
             $finalResponse = $response->render();
         }
 
-        if (!App::isCli()) {
+        $app = App::getInstance();
+
+        if ($app->isCli()) {
             echo $finalResponse;
             return null;
         }

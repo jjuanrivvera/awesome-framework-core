@@ -2,6 +2,8 @@
 
 namespace Awesome;
 
+use Exception;
+
 /**
  * Class Config
  * @package Awesome
@@ -42,13 +44,23 @@ class Config
      */
     public function __construct()
     {
-        $configParams = [];
+        $this->params = [];
 
-        foreach (glob(App::getConfigPath()) as $filename) {
-            $file = pathinfo($filename, PATHINFO_FILENAME);
-            $configParams[$file] = require $filename;
+        $app = App::getInstance();
+        $configPath = $app->getConfigPath();
+
+        if (!is_dir($configPath)) {
+            throw new Exception('Config directory not found');
         }
 
-        $this->params = $configParams;
+        foreach (glob($configPath . '/*.php') as $filename) {
+            $file = pathinfo($filename, PATHINFO_FILENAME);
+            $config = require $filename;
+            if (is_array($config)) {
+                $this->params[$file] = $config;
+            } else {
+                throw new Exception('Invalid config file: ' . $filename);
+            }
+        }
     }
 }

@@ -43,7 +43,8 @@ class View
         static $twig = null;
 
         if ($twig === null) {
-            $loader = new FilesystemLoader(App::getViewPath());
+            $app = App::getInstance();
+            $loader = new FilesystemLoader($app->getViewPath());
             $twig = new Environment($loader);
         }
 
@@ -89,6 +90,7 @@ class View
      */
     public static function exists(string $template): bool
     {
-        return file_exists(App::getViewPath() . "/$template");
+        $app = App::getInstance();
+        return file_exists($app->getViewPath() . "/$template");
     }
 }

@@ -39,11 +39,13 @@ function env(string $key, mixed $default = null): mixed
  */
 function container(string $class = null, array $parameters = []): mixed
 {
+    $app = App::getInstance();
+
     if (is_null($class)) {
-        return App::getContainer();
+        return $app->getContainer();
     }
 
-    return App::getContainer()->make($class, $parameters);
+    return $app->getContainer()->make($class, $parameters);
 }
 
 /**
