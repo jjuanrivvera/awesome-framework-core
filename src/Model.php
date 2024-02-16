@@ -42,7 +42,7 @@ abstract class Model
      * Get all records from the database
      * @return array<mixed>|false
      */
-    public function all(): array|false
+    public function all(): array | false
     {
         $query = "SELECT * FROM {$this->table}";
         $statement = $this->db->connection->prepare($query);
@@ -86,7 +86,7 @@ abstract class Model
      * @param int|string $value
      * @return array<mixed>|false
      */
-    public function allBy(string $field, $value): array|false
+    public function allBy(string $field, $value): array | false
     {
         $query = "SELECT * FROM {$this->table} WHERE '{$field}' = :value";
         $statement = $this->db->connection->prepare($query);
@@ -112,7 +112,7 @@ abstract class Model
         try {
             $this->db->beginTransaction();
             $query = "UPDATE {$this->table} SET ";
-            $query .= implode(', ', array_map(function ($key) use ($data) {
+            $query .= implode(', ', array_map(function ($key) {
                 return "{$key} = :{$key}";
             }, array_keys($data)));
             $query .= " WHERE id = :id";
@@ -194,7 +194,7 @@ abstract class Model
      * @return void
      * @throws \Throwable
      */
-    public function deleteWhere(string $field, int|string $value): void
+    public function deleteWhere(string $field, int | string $value): void
     {
         try {
             $this->db->beginTransaction();
@@ -225,7 +225,7 @@ abstract class Model
                 'integer' => PDO::PARAM_INT,
                 'bool' => PDO::PARAM_BOOL,
                 'NULL' => PDO::PARAM_NULL,
-                'string' => PDO::PARAM_STR
+                default => PDO::PARAM_STR
             };
 
             $statement->bindValue(":{$key}", $value, $dataType);

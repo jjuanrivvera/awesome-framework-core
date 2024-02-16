@@ -16,7 +16,7 @@ abstract class Repository implements Contract
      * Get all records from the database
      * @return array<mixed>|false
      */
-    public function all(): array|false
+    public function all(): array | false
     {
         return $this->model->all();
     }

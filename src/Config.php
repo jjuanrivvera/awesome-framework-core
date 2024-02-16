@@ -24,7 +24,7 @@ class Config
     {
         $keys = explode('.', $key);
 
-        if (count($keys) == 0) {
+        if (count($keys) == 1) {
             return null;
         }
 

@@ -10,6 +10,11 @@ class Route
 {
     /**
      * Route constructor
+     * @param string $path
+     * @param string $method
+     * @param callable|string $callback
+     * @param string $regexPath
+     * @param array<mixed> $params
      * @throws \Throwable
      * @return void
      */
