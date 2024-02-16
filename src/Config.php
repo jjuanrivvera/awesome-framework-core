@@ -23,15 +23,14 @@ class Config
     public function get(string $key): mixed
     {
         $keys = explode('.', $key);
+        $value = $this->params;
 
-        if (count($keys) == 1) {
-            return null;
-        }
+        foreach ($keys as $key) {
+            if (!isset($value[$key])) {
+                return null;
+            }
 
-        $value = $this->params[$keys[0]];
-
-        for ($i = 1; $i < count($keys); $i++) {
-            $value = $value[$keys[$i]];
+            $value = $value[$key];
         }
 
         return $value;
