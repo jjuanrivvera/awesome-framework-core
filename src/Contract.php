@@ -13,7 +13,7 @@ interface Contract
      * Get all records
      * @return array<mixed>|false
      */
-    public function all(): array|false;
+    public function all(): array | false;
 
     /**
      * Get a single record
@@ -28,7 +28,7 @@ interface Contract
      * @param int|string $value
      * @return mixed
      */
-    public function findWhere(string $field, int|string $value): mixed;
+    public function findWhere(string $field, int | string $value): mixed;
 
     /**
      * Create a record
@@ -58,5 +58,5 @@ interface Contract
      * @param int|string $value
      * @return mixed
      */
-    public function deleteWhere(string $field, int|string $value): mixed;
+    public function deleteWhere(string $field, int | string $value): mixed;
 }

@@ -37,7 +37,7 @@ abstract class Repository implements Contract
      * @param int|string $value
      * @return mixed
      */
-    public function findWhere(string $field, int|string $value): mixed
+    public function findWhere(string $field, int | string $value): mixed
     {
         return $this->model->findWhere($field, $value);
     }
@@ -48,7 +48,7 @@ abstract class Repository implements Contract
      * @param int|string $value
      * @return array<mixed>|false
      */
-    public function allBy(string $field, int|string $value): array|false
+    public function allBy(string $field, int | string $value): array | false
     {
         return $this->model->allBy($field, $value);
     }
@@ -90,7 +90,7 @@ abstract class Repository implements Contract
      * @param int|string $value
      * @return bool
      */
-    public function deleteWhere(string $field, int|string $value): bool
+    public function deleteWhere(string $field, int | string $value): bool
     {
         return $this->model->deleteWhere($field, $value);
     }

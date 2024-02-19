@@ -3,6 +3,9 @@
 namespace Awesome;
 
 use PDO;
+use Exception;
+use PDOException;
+use InvalidArgumentException;
 use Awesome\Exceptions\DatabaseConnectionException;
 
 /**
@@ -12,6 +15,12 @@ use Awesome\Exceptions\DatabaseConnectionException;
  */
 class Database
 {
+    /**
+     * The singleton instance of the Database.
+     * @var Database|null
+     */
+    private static ?Database $instance = null;
+
     /**
      * Connection
      * @var PDO|null
@@ -24,65 +33,137 @@ class Database
     private Config $config;
 
     /**
-     * Database constructor
+     * Private constructor to prevent direct instantiation.
      * @param Config $config
      */
-    public function __construct(Config $config)
+    private function __construct(Config $config)
     {
         $this->config = $config;
     }
 
     /**
-     * Connect to the database
-     * @throws \Exception
-     * @return void
+     * Prevents cloning of the instance.
      */
-    public function connect(): void
+    private function __clone()
     {
+    }
+
+    /**
+     * Prevents unserialization of the instance.
+     */
+    public function __wakeup()
+    {
+        throw new Exception('Cannot unserialize singleton');
+    }
+
+    /**
+     * Get the singleton instance of the Database.
+     * @param Config $config
+     * @return Database
+     */
+    public static function getInstance(Config $config): Database
+    {
+        if (self::$instance === null) {
+            self::$instance = new self($config);
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * Connect to the database
+     * @throws DatabaseConnectionException
+     * @return PDO
+     */
+    public function connect(): PDO
+    {
+        if ($this->connection !== null) {
+            return $this->connection;
+        }
+
         try {
-            $this->connection = new PDO(
-                $this->config->get('database.connectionString'),
-                $this->config->get('database.username'),
-                $this->config->get('database.password')
-            );
-        } catch (\PDOException $e) {
-            throw new DatabaseConnectionException($e->getMessage(), (int) $e->getCode());
+            $connectionString = $this->config->get('database.connectionString');
+            $username = $this->config->get('database.username');
+            $password = $this->config->get('database.password');
+            $options = $this->config->get('database.options') ?: [];
+
+            if (!$connectionString || !$username || !$password) {
+                throw new InvalidArgumentException("Database configuration parameters missing.");
+            }
+
+            $this->connection = new PDO($connectionString, $username, $password, $options);
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            return $this->connection;
+        } catch (PDOException $e) {
+            throw new DatabaseConnectionException($e->getMessage(), (int)$e->getCode());
         }
     }
 
     /**
      * Begin transaction
+     * @throws DatabaseConnectionException
      * @return void
      */
     public function beginTransaction(): void
     {
-        $this->connection->beginTransaction();
+        try {
+            $this->connect()->beginTransaction();
+        } catch (PDOException $e) {
+            throw new DatabaseConnectionException(
+                "Failed to begin transaction: " . $e->getMessage(),
+                (int)$e->getCode()
+            );
+        }
     }
 
     /**
      * Commit transaction
+     * @throws DatabaseConnectionException
      * @return void
      */
     public function commit(): void
     {
-        $this->connection->commit();
+        try {
+            $this->connect()->commit();
+        } catch (PDOException $e) {
+            throw new DatabaseConnectionException(
+                "Failed to commit transaction: " . $e->getMessage(),
+                (int)$e->getCode()
+            );
+        }
     }
 
     /**
      * Rollback transaction
+     * @throws DatabaseConnectionException
      * @return void
      */
     public function rollback(): void
     {
-        $this->connection->rollBack();
+        try {
+            $this->connect()->rollBack();
+        } catch (PDOException $e) {
+            throw new DatabaseConnectionException(
+                "Failed to rollback transaction: " . $e->getMessage(),
+                (int)$e->getCode()
+            );
+        }
     }
 
     /**
      * Get last insert id
+     * @throws DatabaseConnectionException
      * @return string|false
      */
-    public function lastInsertId(): false|string
+    public function lastInsertId(): string | false
     {
-        return $this->connection->lastInsertId();
+        try {
+            return $this->connect()->lastInsertId();
+        } catch (PDOException $e) {
+            throw new DatabaseConnectionException(
+                "Failed to retrieve last insert ID: " . $e->getMessage(),
+                (int) $e->getCode()
+            );
+        }
     }
 }

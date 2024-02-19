@@ -3,6 +3,7 @@
 namespace Awesome;
 
 use PDO;
+use ReflectionClass;
 use Awesome\Exceptions\NotFoundException;
 
 /**
@@ -25,17 +26,15 @@ abstract class Model
 
     /**
      * Model constructor.
-     * @param Database $db
+     * @param Database|null $db
+     * @throws \ReflectionException
      * @throws \Exception
      * @return void
      */
-    public function __construct(Database $db)
+    public function __construct(Database $db = null)
     {
-        $this->db = $db;
-
-        if (is_null($this->db->connection)) {
-            $this->db->connect();
-        }
+        $this->table = $this->table ?? strtolower((new ReflectionClass($this))->getShortName()) . 's';
+        $this->db = $db ?? Database::getInstance(container('Awesome\Config'));
     }
 
     /**
