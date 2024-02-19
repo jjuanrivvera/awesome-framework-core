@@ -3,8 +3,9 @@
 namespace Awesome;
 
 use Exception;
-use DI\Container;
 use Psr\Http\Message\RequestInterface;
+use Awesome\Interfaces\ConfigInterface;
+use Awesome\Interfaces\ContainerInterface;
 
 /**
  * Class App
@@ -21,9 +22,9 @@ class App
 
     /**
      * Container instance
-     * @var Container
+     * @var ContainerInterface
      */
-    private Container $container;
+    private ContainerInterface $container;
 
     /**
      * @var Router|null
@@ -36,9 +37,9 @@ class App
     private ?bool $isCli = null;
 
     /**
-     * @var string
+     * @var ConfigInterface
      */
-    private string $configPath;
+    private ?ConfigInterface $config = null;
 
     /**
      * @var string
@@ -52,20 +53,20 @@ class App
 
     /**
      * App Constructor
-     * @param string|null $configPath
+     * @param ConfigInterface|null $config
      * @param string|null $routesPath
      * @param string|null $viewPath
      * @param bool $isCli
      * @throws Exception
      */
     private function __construct(
-        string $configPath = null,
+        ConfigInterface $config = null,
         string $routesPath = null,
         string $viewPath = null,
         bool $isCli = null
     ) {
         $this->isCli = $isCli ?? php_sapi_name() === 'cli';
-        $this->configPath = $configPath ?? dirname(__DIR__) . '/config';
+        $this->config = $config ?? new Config();
         $this->routesPath = $routesPath ?? dirname(__DIR__) . '/routes/*.php';
         $this->viewPath = $viewPath ?? '../App/Views';
 
@@ -89,21 +90,21 @@ class App
 
     /**
      * Get application instance
-     * @param string|null $configPath
+     * @param ConfigInterface|null $config
      * @param string|null $routesPath
      * @param string|null $viewPath
      * @param bool|null $isCli
-     * @return App
+     * @return self
      * @throws Exception
      */
     public static function getInstance(
-        string $configPath = null,
+        ConfigInterface $config = null,
         string $routesPath = null,
         string $viewPath = null,
         bool $isCli = null
-    ): App {
+    ): self {
         if (is_null(self::$instance)) {
-            self::$instance = new self($configPath, $routesPath, $viewPath, $isCli);
+            self::$instance = new self($config, $routesPath, $viewPath, $isCli);
         }
 
         return self::$instance;
@@ -121,9 +122,9 @@ class App
 
     /**
      * Get container instance
-     * @return Container
+     * @return ContainerInterface
      */
-    public function getContainer(): Container
+    public function getContainer(): ContainerInterface
     {
         return $this->container;
     }
@@ -135,6 +136,15 @@ class App
     public function getRouter(): Router
     {
         return $this->router;
+    }
+
+    /**
+     * Get config instance
+     * @return ConfigInterface
+     */
+    public function getConfig(): ConfigInterface
+    {
+        return $this->config;
     }
 
     /**
@@ -156,15 +166,6 @@ class App
     public function isCli(): bool
     {
         return $this->isCli;
-    }
-
-    /**
-     * Get config path
-     * @return string
-     */
-    public function getConfigPath(): string
-    {
-        return $this->configPath;
     }
 
     /**

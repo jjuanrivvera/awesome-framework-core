@@ -28,11 +28,12 @@ $ composer require jjuanrivvera/awesome-framework-core
 ``` php
 // Bootstrap application
 $app = new Awesome\App(
-    configPath: dirname(__FILE__) . '/config/*.php', // Set config path, optional
+    config: new Awesome\Config(dirname(__FILE__) . '/config'), // Set config, optional
     routesPath: dirname(__FILE__) . '/routes/*.php', // Set routes path, optional
     viewPath: './App/Views', // Set views path, optional
     isCli: false // Define if the application is running as CLI, default false
 );
+
 // Initialize application
 $app->init();
 

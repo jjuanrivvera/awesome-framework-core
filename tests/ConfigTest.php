@@ -9,7 +9,7 @@ class ConfigTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->config = new Config('./config/*.php');
+        $this->config = new Config('./config/');
     }
     
     public function testConfig(): void
